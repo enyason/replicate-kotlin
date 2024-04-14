@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.23"
+    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
 group = "com.github.enyason"

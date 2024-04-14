@@ -1,0 +1,25 @@
+name: Run Checks on Codebase
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run Unit tests
+        run: ./gradlew clean test
+
+      - name: Run Ktlint check
+        run: ./gradlew ktlintCheck
