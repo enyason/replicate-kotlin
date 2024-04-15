@@ -3,7 +3,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
 }
 
-group = "com.github.enyason"
+group = "io.github.enyason"
 version = "1.0-SNAPSHOT"
 
 repositories {
