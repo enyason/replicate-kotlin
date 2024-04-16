@@ -1,4 +1,4 @@
-package io.github.enyason.multipleentry.predictions
+package io.github.enyason.predictions
 
 import retrofit2.Response
 import retrofit2.http.POST
