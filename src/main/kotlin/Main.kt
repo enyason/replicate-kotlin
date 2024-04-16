@@ -55,5 +55,4 @@ fun main() {
     runBlocking { trainings.createTraining() }
 
     // ======= END: Sample usage of Multiple entry ======= //
-
 }
