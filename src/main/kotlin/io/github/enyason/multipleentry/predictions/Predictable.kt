@@ -1,4 +1,4 @@
-package io.github.enyason.predictions
+package io.github.enyason.multipleentry.predictions
 
 interface Predictable {
     val modelId: String

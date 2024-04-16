@@ -1,4 +1,4 @@
-package io.github.enyason.predictions
+package io.github.enyason.base
 
 data class ReplicateConfig(
     val apiToken: String,
