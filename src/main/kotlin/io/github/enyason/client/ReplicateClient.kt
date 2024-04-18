@@ -2,15 +2,17 @@ package io.github.enyason.client
 
 import io.github.enyason.io.github.enyason.predictable.validate
 import io.github.enyason.predictable.Predictable
+import io.github.enyason.predictions.PredictionsApi
+import io.github.enyason.predictions.createPrediction
+import retrofit2.Response
 
 class ReplicateClient(
-    private val apiToken: String,
-    private val predictionAPI: Unit,
-    private val trainingAPI: Unit
+    private val predictionAPI: PredictionsApi,
 ) : Replicate {
 
-    override suspend fun createPrediction(predictable: Predictable) {
+    override suspend fun createPrediction(predictable: Predictable): Response<Any?> {
         predictable.validate()
+        return predictionAPI.createPrediction()
 
     }
 

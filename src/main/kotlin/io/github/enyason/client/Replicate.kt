@@ -1,15 +1,12 @@
 package io.github.enyason.client
 
 import io.github.enyason.predictable.Predictable
+import io.github.enyason.predictions.PredictionsApi
 
 interface Replicate {
     companion object {
         fun client(token: String): Replicate {
-            return ReplicateClient(
-                apiToken = token,
-                predictionAPI = Unit,
-                trainingAPI = Unit
-            )
+            return ReplicateClient(predictionAPI = PredictionsApi(token))
         }
 
     }
