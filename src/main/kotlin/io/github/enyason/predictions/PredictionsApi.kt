@@ -14,6 +14,6 @@ class PredictionsApi(config: ReplicateConfig) {
 }
 
 // Placeholder extension function
-suspend fun PredictionsApi.createPrediction(): Response<Any?> {
-    return service.createPrediction()
+suspend fun PredictionsApi.createPrediction(requestBody: Map<String, Any>): Response<Any?> {
+    return service.createPrediction(requestBody)
 }

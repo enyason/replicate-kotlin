@@ -11,7 +11,7 @@ interface Replicate {
 
     }
 
-    suspend fun createPrediction(predictable: Predictable): Any
+    suspend fun createPrediction(predictable: Predictable): Result<Any?>
 
     suspend fun getPrediction(predictionId: String): Any
 
