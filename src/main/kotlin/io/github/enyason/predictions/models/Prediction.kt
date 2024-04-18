@@ -8,9 +8,9 @@ data class Prediction(
     var version: String? = null,
     var input: Input? = null,
     var logs: String? = null,
-    var output: String? = null,
+    var output: Any? = null,
     var error: String? = null,
-    var status: String? = null,
+    var status: PredictionStatus? = null,
     var source: String? = null,
     @SerializedName("created_at")
     var createdAt: String? = null,
