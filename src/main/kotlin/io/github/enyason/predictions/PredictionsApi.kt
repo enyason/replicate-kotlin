@@ -1,5 +1,7 @@
 package io.github.enyason.predictions
 
+import io.github.enyason.base.ReplicateConfig
+import io.github.enyason.base.RetrofitFactory
 import retrofit2.Response
 
 class PredictionsApi(config: ReplicateConfig) {

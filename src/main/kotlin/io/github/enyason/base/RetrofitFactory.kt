@@ -1,4 +1,4 @@
-package io.github.enyason.predictions
+package io.github.enyason.base
 
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
