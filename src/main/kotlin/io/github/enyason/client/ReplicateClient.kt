@@ -6,7 +6,7 @@ import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.createPrediction
 
 class ReplicateClient(
-    private val predictionAPI: PredictionsApi,
+    private val predictionAPI: PredictionsApi
 ) : Replicate {
 
     override suspend fun createPrediction(predictable: Predictable): Result<Any?> {
@@ -22,22 +22,17 @@ class ReplicateClient(
         } catch (error: Exception) {
             return Result.failure(error)
         }
-
     }
 
     override suspend fun getPrediction(predictionId: String) {
         if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
-
     }
 
     override suspend fun getPredictions(): List<String> {
         return emptyList()
     }
 
-
     override suspend fun cancelPrediction(predictionId: String) {
         if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
-
     }
-
 }

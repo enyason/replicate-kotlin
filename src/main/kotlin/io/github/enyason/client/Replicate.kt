@@ -8,7 +8,6 @@ interface Replicate {
         fun client(token: String): Replicate {
             return ReplicateClient(predictionAPI = PredictionsApi(token))
         }
-
     }
 
     suspend fun createPrediction(predictable: Predictable): Result<Any?>
@@ -18,5 +17,4 @@ interface Replicate {
     suspend fun getPredictions(): List<String>
 
     suspend fun cancelPrediction(predictionId: String)
-
 }
