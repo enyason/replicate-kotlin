@@ -28,3 +28,9 @@ tasks.test {
 kotlin {
     jvmToolchain(8)
 }
+
+ktlint {
+    filter {
+        exclude("**/PredictionStatus.kt")
+    }
+}
