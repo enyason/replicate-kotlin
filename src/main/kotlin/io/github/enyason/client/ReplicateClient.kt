@@ -10,13 +10,12 @@ class ReplicateClient(
 ) : Replicate {
 
     override suspend fun createPrediction(predictable: Predictable): Result<Any?> {
-        predictable.validate()
-        val request = mapOf(
-            "version" to predictable.versionId,
-            "input" to predictable.input
-        )
-
         try {
+            predictable.validate()
+            val request = mapOf(
+                "version" to predictable.versionId,
+                "input" to predictable.input
+            )
             val response = predictionAPI.createPrediction(request)
             return Result.success(response.body())
         } catch (error: Exception) {
