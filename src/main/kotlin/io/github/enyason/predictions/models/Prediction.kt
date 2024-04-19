@@ -6,7 +6,7 @@ data class Prediction(
     var id: String? = null,
     var model: String? = null,
     var version: String? = null,
-    var input: Input? = null,
+    var input: Map<String, Any?>? = null,
     var logs: String? = null,
     var output: Any? = null,
     var error: String? = null,
