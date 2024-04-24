@@ -24,15 +24,17 @@ class ReplicateClient(
         }
     }
 
-    override suspend fun getPrediction(predictionId: String) {
+    override suspend fun getPrediction(predictionId: String): Result<Prediction> {
         if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
+        return Result.failure(Throwable())
     }
 
-    override suspend fun getPredictions(): List<String> {
-        return emptyList()
+    override suspend fun getPredictions(): Result<List<Prediction>> {
+        return Result.success(emptyList())
     }
 
-    override suspend fun cancelPrediction(predictionId: String) {
+    override suspend fun cancelPrediction(predictionId: String): Result<Unit> {
         if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
+        return Result.success(Unit)
     }
 }
