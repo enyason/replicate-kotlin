@@ -2,6 +2,7 @@ package io.github.enyason.predictions
 
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.predictions.models.PredictionDTO
 import retrofit2.Response
 
 class PredictionsApi(config: ReplicateConfig) {
@@ -14,6 +15,6 @@ class PredictionsApi(config: ReplicateConfig) {
 }
 
 // Placeholder extension function
-suspend fun PredictionsApi.createPrediction(requestBody: Map<String, Any>): Response<Any?> {
+suspend fun PredictionsApi.createPrediction(requestBody: Map<String, Any>): Response<PredictionDTO> {
     return service.createPrediction(requestBody)
 }
