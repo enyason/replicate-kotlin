@@ -1,5 +1,6 @@
 package io.github.enyason.client
 
+import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 
@@ -10,7 +11,7 @@ interface Replicate {
         }
     }
 
-    suspend fun createPrediction(predictable: Predictable): Result<Any?>
+    suspend fun createPrediction(predictable: Predictable): Result<Prediction>
 
     suspend fun getPrediction(predictionId: String): Any
 
