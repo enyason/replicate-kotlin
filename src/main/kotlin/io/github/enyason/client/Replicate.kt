@@ -13,9 +13,9 @@ interface Replicate {
 
     suspend fun createPrediction(predictable: Predictable): Result<Prediction>
 
-    suspend fun getPrediction(predictionId: String): Any
+    suspend fun getPrediction(predictionId: String): Result<Prediction>
 
-    suspend fun getPredictions(): List<String>
+    suspend fun getPredictions(): Result<List<Prediction>>
 
-    suspend fun cancelPrediction(predictionId: String)
+    suspend fun cancelPrediction(predictionId: String): Result<Unit>
 }
