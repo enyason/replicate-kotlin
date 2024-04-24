@@ -9,9 +9,8 @@ data class PredictionErrorResponse(
     var title: String? = null,
     @SerializedName("invalid_fields")
     var invalidFields: List<Any>? = null,
-    var status: Int? = null,
+    var status: Int? = null
 )
-
 
 fun ResponseBody.toModel(): PredictionErrorResponse? {
     val jsonString = this.string()

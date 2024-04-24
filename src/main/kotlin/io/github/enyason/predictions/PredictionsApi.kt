@@ -5,8 +5,6 @@ import io.github.enyason.base.RetrofitFactory
 import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.io.github.enyason.predictions.models.toModel
-import io.github.enyason.predictions.models.PredictionDTO
-import retrofit2.Response
 
 class PredictionsApi(config: ReplicateConfig) {
 

@@ -1,6 +1,5 @@
 package io.github.enyason.client
 
-import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.io.github.enyason.predictable.validate
 import io.github.enyason.predictable.Predictable
