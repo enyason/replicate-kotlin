@@ -18,10 +18,7 @@ class ReplicateClient(
                 "version" to predictable.versionId,
                 "input" to predictable.input
             )
-            val response = predictionAPI.createPrediction(request)
-            println(response.isSuccessful)
-            println(response.errorBody().toString())
-            val prediction = response.body()?.toPrediction() ?: throw IllegalStateException("Could not create predication ")
+            val prediction = predictionAPI.createPrediction(request)
             return Result.success(prediction)
         } catch (error: Exception) {
             return Result.failure(error)
