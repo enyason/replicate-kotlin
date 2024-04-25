@@ -1,8 +1,9 @@
 package io.github.enyason.client
 
 import io.github.enyason.domain.models.Prediction
-import io.github.enyason.io.github.enyason.predictable.validate
+import io.github.enyason.predictable.validate
 import io.github.enyason.predictable.Predictable
+import io.github.enyason.predictable.validateId
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.createPrediction
 
@@ -25,7 +26,7 @@ class ReplicateClient(
     }
 
     override suspend fun getPrediction(predictionId: String): Result<Prediction> {
-        if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
+        predictionId.validateId()
         return Result.failure(Throwable())
     }
 
@@ -34,7 +35,7 @@ class ReplicateClient(
     }
 
     override suspend fun cancelPrediction(predictionId: String): Result<Unit> {
-        if (predictionId.isEmpty()) throw IllegalArgumentException("Provided an empty prediction ID")
+        predictionId.validateId()
         return Result.success(Unit)
     }
 }
