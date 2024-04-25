@@ -1,4 +1,4 @@
-package io.github.enyason.io.github.enyason.predictions.models
+package io.github.enyason.predictions.models
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
