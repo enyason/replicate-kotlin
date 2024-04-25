@@ -6,10 +6,17 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitFactory {
+/**
+ * A [Retrofit] builder which provides a single instance of Retrofit throughout the Application lifecycle
+ */
+internal object RetrofitFactory {
 
     private lateinit var retrofit: Retrofit
 
+    /**
+     * Returns a new or existing instance of [Retrofit].
+     * The new [Retrofit] instance is built using configurations specified in [ReplicateConfig]
+     */
     fun buildRetrofit(
         config: ReplicateConfig,
         loggingLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC
