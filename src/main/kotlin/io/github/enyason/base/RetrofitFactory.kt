@@ -8,6 +8,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 /**
  * A [Retrofit] builder which provides a single instance of Retrofit throughout the Application lifecycle
+ *
+ * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
 internal object RetrofitFactory {
 
