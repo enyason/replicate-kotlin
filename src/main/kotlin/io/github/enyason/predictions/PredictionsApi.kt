@@ -2,7 +2,9 @@ package io.github.enyason.predictions
 
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
-import retrofit2.Response
+import io.github.enyason.domain.mappers.toPrediction
+import io.github.enyason.domain.models.Prediction
+import io.github.enyason.predictions.models.toModel
 
 class PredictionsApi(config: ReplicateConfig) {
 
@@ -11,9 +13,16 @@ class PredictionsApi(config: ReplicateConfig) {
     private val retrofit by lazy { RetrofitFactory.buildRetrofit(config) }
 
     internal val service by lazy { retrofit.create(PredictionsApiService::class.java) }
-}
 
-// Placeholder extension function
-suspend fun PredictionsApi.createPrediction(): Response<Any?> {
-    return service.createPrediction()
+    suspend fun createPrediction(requestBody: Map<String, Any>): Pair<Prediction?, Exception?> {
+        val response = service.createPrediction(requestBody)
+        val predictionDto = response.body()
+        if (response.isSuccessful && predictionDto != null) {
+            return Pair(predictionDto.toPrediction(), null)
+        } else {
+            val error = response.errorBody()?.toModel()
+            val message = error?.detail ?: "Could not create predication"
+            return Pair(null, IllegalStateException(message))
+        }
+    }
 }
