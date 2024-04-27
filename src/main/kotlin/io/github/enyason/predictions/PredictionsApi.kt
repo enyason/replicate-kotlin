@@ -13,17 +13,16 @@ class PredictionsApi(config: ReplicateConfig) {
     private val retrofit by lazy { RetrofitFactory.buildRetrofit(config) }
 
     internal val service by lazy { retrofit.create(PredictionsApiService::class.java) }
-}
 
-// Placeholder extension function
-suspend fun PredictionsApi.createPrediction(requestBody: Map<String, Any>): Prediction {
-    val response = service.createPrediction(requestBody)
-    val predictionDto = response.body()
-    if (response.isSuccessful && predictionDto != null) {
-        return predictionDto.toPrediction()
-    } else {
-        val error = response.errorBody()?.toModel()
-        val message = error?.detail ?: "Could not create predication"
-        throw IllegalStateException(message)
+    suspend fun createPrediction(requestBody: Map<String, Any>): Pair<Prediction?, Exception?> {
+        val response = service.createPrediction(requestBody)
+        val predictionDto = response.body()
+        if (response.isSuccessful && predictionDto != null) {
+            return Pair(predictionDto.toPrediction(), null)
+        } else {
+            val error = response.errorBody()?.toModel()
+            val message = error?.detail ?: "Could not create predication"
+            return Pair(null, IllegalStateException(message))
+        }
     }
 }
