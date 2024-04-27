@@ -7,7 +7,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -58,7 +57,7 @@ class ReplicateClientTest {
             "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
 
         val prediction = Prediction(
-            id = UUID.randomUUID().toString(),
+            id = "random-id",
             output = listOf(predictionOutputUrl)
         )
         coEvery { predictionApi.createPrediction(any()) } returns Pair(prediction, null)

@@ -17,7 +17,6 @@ class ReplicateClient(
 
     override suspend fun createPrediction(predictable: Predictable): Result<Prediction> {
         try {
-            println(Thread.currentThread())
             predictable.validate()
             val request = mapOf(
                 "version" to predictable.versionId,
