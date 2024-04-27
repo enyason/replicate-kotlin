@@ -7,6 +7,11 @@ import io.github.enyason.predictable.validateId
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.createPrediction
 
+/**
+ * [ReplicateClient] is the concrete implementation of [Replicate]
+ * @see Replicate
+ * @author Emmanuel Enya
+ */
 class ReplicateClient(
     private val predictionAPI: PredictionsApi
 ) : Replicate {
