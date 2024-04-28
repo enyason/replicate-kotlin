@@ -20,12 +20,18 @@ class PredictionsApiTest {
     private lateinit var mockWebServer: MockWebServer
     private lateinit var sut: PredictionsApi
     private val gson = Gson()
+    private lateinit var id: String
+    private lateinit var version: String
+    private lateinit var input: Map<String, Any>
 
     @BeforeTest
     fun setup() {
         mockWebServer = MockWebServer()
         mockWebServer.start(8080)
-        sut = PredictionsApi(ReplicateConfig("tokenYUIOPJHIGUFYDRT", baseUrl = mockWebServer.url("").toString()))
+        sut = PredictionsApi(ReplicateConfig("tokenYUIOPJHIGUFYDRT", baseUrl = mockWebServer.url(path = "").toString()))
+        id = "random-id"
+        version = "2exbc4"
+        input = mapOf("prompt" to "hd image of Einstein")
     }
 
     @AfterTest
@@ -35,17 +41,13 @@ class PredictionsApiTest {
 
     @Test
     fun `test createPrediction _API returns success response`() = runTest {
-        val predictable = TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
-        val requestBody = mapOf(
-            "version" to predictable.versionId,
-            "input" to predictable.input
-        )
+        val requestBody = buildRequestBody()
 
         val responseBody = PredictionDTO(
-            id = "random-id",
+            id = id,
             model = "some-model",
-            version = "2exbc4",
-            input = mapOf("prompt" to "hd image of Einstein"),
+            version = version,
+            input = input,
             output = listOf("outputUrl"),
             status = "succeeded"
         )
@@ -68,11 +70,7 @@ class PredictionsApiTest {
 
     @Test
     fun `test createPrediction _API returns error response _exception is thrown`() = runTest {
-        val predictable = TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
-        val requestBody = mapOf(
-            "version" to predictable.versionId,
-            "input" to predictable.input
-        )
+        val requestBody = buildRequestBody()
 
         mockWebServer.enqueue(
             MockResponse().setResponseCode(401)
@@ -86,5 +84,13 @@ class PredictionsApiTest {
         assertEquals("POST", request.method)
         assertEquals("/predictions", request.path)
         assertTrue(request.headers["Authorization"] != null)
+    }
+
+    private fun buildRequestBody(): Map<String, Any> {
+        val predictable = TestPredictable(versionId = version, input = input)
+        return mapOf(
+            "version" to predictable.versionId,
+            "input" to predictable.input
+        )
     }
 }
