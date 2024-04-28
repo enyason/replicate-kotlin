@@ -5,8 +5,10 @@ import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.BeforeEach
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -21,10 +23,15 @@ class ReplicateClientTest {
     private lateinit var predictionApi: PredictionsApi
     private lateinit var sut: ReplicateClient
 
-    @BeforeEach
+    @BeforeTest
     fun before() {
-        predictionApi = mockk<PredictionsApi>()
+        predictionApi = mockk()
         sut = ReplicateClient(predictionAPI = predictionApi)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test

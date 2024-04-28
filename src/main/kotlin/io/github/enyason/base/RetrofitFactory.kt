@@ -3,6 +3,7 @@ package io.github.enyason.base
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.jetbrains.annotations.TestOnly
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -13,31 +14,32 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 internal object RetrofitFactory {
 
-    private lateinit var retrofit: Retrofit
+    private var retrofit: Retrofit? = null
 
     /**
      * Returns a new or existing instance of [Retrofit].
      * The new [Retrofit] instance is built using configurations specified in [ReplicateConfig]
+     * @param config A set of configurations used to control the way the SDK behaves
      */
     fun buildRetrofit(
-        config: ReplicateConfig,
-        loggingLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC
+        config: ReplicateConfig
     ): Retrofit {
-        if (this::retrofit.isInitialized) {
+        val retrofit = this.retrofit
+        if (retrofit != null) {
             return retrofit
         }
 
-        retrofit = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl(config.baseUrl)
-            .client(buildHttpClient(config, loggingLevel))
+            .client(buildHttpClient(config))
             .addConverterFactory(createConverterFactory())
-            .build()
-        return retrofit
+            .build().also { instance ->
+                this.retrofit = instance
+            }
     }
 
     private fun buildHttpClient(
-        config: ReplicateConfig,
-        loggingLevel: HttpLoggingInterceptor.Level
+        config: ReplicateConfig
     ) = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
@@ -45,7 +47,7 @@ internal object RetrofitFactory {
                 .build()
             chain.proceed(request)
         }.also {
-            if (config.enableLogging) it.addInterceptor(HttpLoggingInterceptor().setLevel(loggingLevel))
+            if (config.enableLogging) it.addInterceptor(HttpLoggingInterceptor().setLevel(config.loggingLevel))
         }.build()
 
     private fun createConverterFactory() = GsonConverterFactory.create(
@@ -53,4 +55,9 @@ internal object RetrofitFactory {
             .setLenient()
             .create()
     )
+
+    @TestOnly
+    internal fun reset() {
+        retrofit = null
+    }
 }

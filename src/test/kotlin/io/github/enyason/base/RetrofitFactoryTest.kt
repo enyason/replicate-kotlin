@@ -2,18 +2,20 @@ package io.github.enyason.base
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import org.junit.jupiter.api.MethodOrderer
-import org.junit.jupiter.api.Order
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestMethodOrder
 import org.junit.jupiter.api.assertThrows
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation::class)
 class RetrofitFactoryTest {
+
+    @AfterTest
+    fun tearDown() {
+        RetrofitFactory.reset()
+    }
 
     @Test
     fun `test buildRetrofit _all parameters are valid`() {
@@ -34,7 +36,6 @@ class RetrofitFactoryTest {
     }
 
     @Test
-    @Order(1)
     fun `test buildRetrofit _baseUrl is not provided _IllegalArgumentException is thrown`() {
         assertThrows<IllegalArgumentException>("Should throw an Exception") {
             RetrofitFactory.buildRetrofit(ReplicateConfig("token", baseUrl = ""))
