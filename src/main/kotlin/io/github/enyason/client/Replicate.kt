@@ -7,8 +7,14 @@ import io.github.enyason.predictions.PredictionsApi
 
 /**
  * This interface defines the actions for [Prediction], possible from https://replicate.com API
+ *
  * To create a replicate client:
+ *
  * val client = Replicate.client("token")
+ *
+ *          or
+ *
+ * val client = Replicate.client(ReplicateConfig("token"))
  *
  *  @author Emmanuel Enya <a href="https://github.com/enyason">link</a>
  */
@@ -17,7 +23,7 @@ interface Replicate {
 
         /**
          * create a replicate client using authorization code
-         * @param token
+         * @param token API token from [Replicate](https://replicate.com) API
          */
         fun client(token: String): Replicate {
             return ReplicateClient(predictionAPI = PredictionsApi(token))
@@ -25,7 +31,7 @@ interface Replicate {
 
         /**
          * create a replicate client using [ReplicateConfig]
-         * @param config
+         * @param config A set of configurations used to control the way the SDK behaves
          */
         fun client(config: ReplicateConfig): Replicate {
             return ReplicateClient(predictionAPI = PredictionsApi(config))

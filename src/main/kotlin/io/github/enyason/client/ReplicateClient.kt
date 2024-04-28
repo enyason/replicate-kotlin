@@ -16,19 +16,19 @@ class ReplicateClient(
 ) : Replicate {
 
     override suspend fun createPrediction(predictable: Predictable): Result<Prediction> {
-        try {
+        return try {
             predictable.validate()
             val request = mapOf(
                 "version" to predictable.versionId,
                 "input" to predictable.input
             )
             val (prediction, error) = predictionAPI.createPrediction(request)
-            return when {
+            when {
                 prediction != null -> Result.success(prediction)
                 else -> Result.failure(error ?: Throwable())
             }
         } catch (error: Exception) {
-            return Result.failure(error)
+            Result.failure(error)
         }
     }
 

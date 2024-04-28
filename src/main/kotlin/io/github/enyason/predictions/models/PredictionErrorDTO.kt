@@ -14,6 +14,5 @@ data class PredictionErrorResponse(
 
 fun ResponseBody.toModel(): PredictionErrorResponse? {
     val jsonString = this.string()
-    println(jsonString)
     return Gson().fromJson(jsonString, PredictionErrorResponse::class.java)
 }
