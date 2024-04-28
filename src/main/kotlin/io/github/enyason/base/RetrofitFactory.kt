@@ -55,7 +55,7 @@ internal object RetrofitFactory {
     )
 
     @TestOnly
-    fun reset() {
+    internal fun reset() {
         retrofit = null
     }
 }
