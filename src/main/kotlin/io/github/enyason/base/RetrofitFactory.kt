@@ -24,16 +24,18 @@ internal object RetrofitFactory {
     fun buildRetrofit(
         config: ReplicateConfig
     ): Retrofit {
+        val retrofit = this.retrofit
         if (retrofit != null) {
-            return retrofit!!
+            return retrofit
         }
 
-        retrofit = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl(config.baseUrl)
             .client(buildHttpClient(config))
             .addConverterFactory(createConverterFactory())
-            .build()
-        return retrofit!!
+            .build().also { instance ->
+                this.retrofit = instance
+            }
     }
 
     private fun buildHttpClient(
