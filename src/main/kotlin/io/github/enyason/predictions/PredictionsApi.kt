@@ -11,6 +11,7 @@ import io.github.enyason.predictions.models.toModel
  *
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  * @author Emmanuel Enya <a href="https://github.com/enyason">link</a>
+ * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  */
 class PredictionsApi(config: ReplicateConfig) {
 
@@ -22,12 +23,24 @@ class PredictionsApi(config: ReplicateConfig) {
 
     suspend fun createPrediction(requestBody: Map<String, Any>): Pair<Prediction?, Exception?> {
         val response = service.createPrediction(requestBody)
-        val predictionDto = response.body()
-        return if (response.isSuccessful && predictionDto != null) {
-            Pair(predictionDto.toPrediction(), null)
+        val prediction = response.body()?.toPrediction()
+        return if (response.isSuccessful && prediction != null) {
+            Pair(prediction, null)
         } else {
             val error = response.errorBody()?.toModel()
             val message = error?.detail ?: "Could not create predication"
+            Pair(null, IllegalStateException(message))
+        }
+    }
+
+    suspend fun getPrediction(predictionId: String): Pair<Prediction?, Exception?> {
+        val response = service.getPrediction(predictionId)
+        val prediction = response.body()?.toPrediction()
+        return if (response.isSuccessful && prediction != null) {
+            Pair(prediction, null)
+        } else {
+            val error = response.errorBody()?.toModel()
+            val message = error?.detail ?: "Could not fetch predication"
             Pair(null, IllegalStateException(message))
         }
     }

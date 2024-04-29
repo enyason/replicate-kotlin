@@ -45,6 +45,10 @@ interface Replicate {
      */
     suspend fun createPrediction(predictable: Predictable): Result<Prediction>
 
+    /**
+     * Get the current state of a prediction identified by the provided predictionId
+     * @param predictionId The Prediction's ID
+     */
     suspend fun getPrediction(predictionId: String): Result<Prediction>
 
     suspend fun getPredictions(): Result<List<Prediction>>
