@@ -6,7 +6,7 @@ import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 
 /**
- * This interface defines the actions for [Prediction], possible from https://replicate.com API
+ * This interface defines the actions for [Prediction], possible from [Replicate](https://replicate.com) API
  *
  * To create a replicate client:
  *
@@ -49,5 +49,9 @@ interface Replicate {
 
     suspend fun getPredictions(): Result<List<Prediction>>
 
-    suspend fun cancelPrediction(predictionId: String): Result<Unit>
+    /**
+     * Cancel an ongoing Prediction identified by the provided predictionId
+     * @param predictionId The ID of the prediction to cancel
+     */
+    suspend fun cancelPrediction(predictionId: String): Result<Boolean>
 }

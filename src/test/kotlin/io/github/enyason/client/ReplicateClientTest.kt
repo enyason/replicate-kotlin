@@ -10,6 +10,9 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 data class TestPredictable(
@@ -73,5 +76,39 @@ class ReplicateClientTest {
 
         assertTrue { result.isSuccess }
         assertTrue { result.getOrNull() == prediction }
+    }
+
+    @Test
+    fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {
+        val result = sut.cancelPrediction("")
+
+        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+        assertTrue(result.isFailure)
+        assertEquals("Provided an empty prediction ID", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun `test cancelPrediction _Call to API is successful _Result is success`() = runTest {
+        coEvery { predictionApi.cancelPrediction(any()) } returns Pair(true, null)
+
+        val result = sut.cancelPrediction("pId")
+
+        assertTrue(result.isSuccess)
+        assertNull(result.exceptionOrNull())
+        assertEquals(true, result.getOrNull())
+    }
+
+    @Test
+    fun `test cancelPrediction _Call to API fails _Result is failure`() = runTest {
+        val predictionId = "pId"
+        val errorMessage = "Could not cancel predication with ID: $predictionId"
+        coEvery { predictionApi.cancelPrediction(any()) } returns Pair(false, IllegalStateException(errorMessage))
+
+        val result = sut.cancelPrediction(predictionId)
+
+        assertTrue(result.isFailure)
+        assertNotNull(result.exceptionOrNull())
+        assertEquals(errorMessage, result.exceptionOrNull()?.message)
+        assertNull(result.getOrNull())
     }
 }

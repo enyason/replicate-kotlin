@@ -31,4 +31,15 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(null, IllegalStateException(message))
         }
     }
+
+    suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
+        val response = service.cancelPrediction(predictionId)
+        return if (response.isSuccessful) {
+            Pair(true, null)
+        } else {
+            val error = response.errorBody()?.toModel()
+            val message = error?.detail ?: "Could not cancel predication with ID: $predictionId"
+            Pair(false, IllegalStateException(message))
+        }
+    }
 }

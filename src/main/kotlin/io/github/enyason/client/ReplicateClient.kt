@@ -9,7 +9,8 @@ import io.github.enyason.predictions.PredictionsApi
 /**
  * [ReplicateClient] is the concrete implementation of [Replicate]
  * @see Replicate
- * @author Emmanuel Enya
+ * @author Emmanuel Enya <a href="https://github.com/enyason">link</a>
+ * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
 class ReplicateClient(
     private val predictionAPI: PredictionsApi
@@ -41,8 +42,16 @@ class ReplicateClient(
         return Result.success(emptyList())
     }
 
-    override suspend fun cancelPrediction(predictionId: String): Result<Unit> {
-        predictionId.validateId()
-        return Result.success(Unit)
+    override suspend fun cancelPrediction(predictionId: String): Result<Boolean> {
+        return try {
+            predictionId.validateId()
+            val (isSuccess, error) = predictionAPI.cancelPrediction(predictionId)
+            when {
+                isSuccess -> Result.success(true)
+                else -> Result.failure(error ?: Throwable())
+            }
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
     }
 }

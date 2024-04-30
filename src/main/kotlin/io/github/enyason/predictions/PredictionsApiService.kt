@@ -4,6 +4,7 @@ import io.github.enyason.predictions.models.PredictionDTO
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
  * The main interface for communicating with [Replicate's](https://replicate.com) Predictions API
@@ -20,4 +21,7 @@ interface PredictionsApiService {
     @POST(ENDPOINT)
     @JvmSuppressWildcards
     suspend fun createPrediction(@Body predictionRequest: Map<String, Any>): Response<PredictionDTO>
+
+    @POST("$ENDPOINT/{predictionId}/cancel")
+    suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
 }

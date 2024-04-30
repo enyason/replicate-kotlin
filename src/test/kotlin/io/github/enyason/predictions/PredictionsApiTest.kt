@@ -12,6 +12,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -83,6 +84,39 @@ class PredictionsApiTest {
         assertTrue(response.second is IllegalStateException)
         assertEquals("POST", request.method)
         assertEquals("/predictions", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
+    fun `test cancelPrediction _API returns success response`() = runTest {
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+        )
+
+        val response = sut.cancelPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertTrue(response.first)
+        assertNull(response.second)
+        assertEquals("POST", request.method)
+        assertEquals("/predictions/$id/cancel", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
+    fun `test cancelPrediction _API returns error response _exception is thrown`() = runTest {
+        mockWebServer.enqueue(
+            MockResponse().setResponseCode(500)
+        )
+
+        val response = sut.cancelPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertFalse(response.first)
+        assertTrue(response.second is IllegalStateException)
+        assertEquals("POST", request.method)
+        assertEquals("/predictions/$id/cancel", request.path)
         assertTrue(request.headers["Authorization"] != null)
     }
 
