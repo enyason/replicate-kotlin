@@ -51,7 +51,7 @@ interface Replicate {
 
     /**
      * Cancel an ongoing Prediction identified by the provided predictionId
-     * @param predictionId The ID of the prediction to cancel
+     * @param predictionId The ID of the prediction to be cancelled
      */
     suspend fun cancelPrediction(predictionId: String): Result<Boolean>
 }
