@@ -46,9 +46,13 @@ class ReplicateClientTest {
 
     @Test
     fun `When creating a prediction fails, Then return an error result`() = runTest {
-        val predictable = TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
+        val predictable =
+            TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
         val errorMessage = "Could not create a prediction, try again"
-        coEvery { predictionApi.createPrediction(any()) } returns Pair(null, IllegalStateException(errorMessage))
+        coEvery { predictionApi.createPrediction(any()) } returns Pair(
+            null,
+            IllegalStateException(errorMessage)
+        )
 
         val result = sut.createPrediction(predictable)
 
@@ -73,6 +77,46 @@ class ReplicateClientTest {
         coEvery { predictionApi.createPrediction(any()) } returns Pair(prediction, null)
 
         val result = sut.createPrediction(predictable)
+
+        assertTrue { result.isSuccess }
+        assertTrue { result.getOrNull() == prediction }
+    }
+
+    @Test
+    fun `Given empty prediction Id, When getting a prediction, Then throw an exception`() =
+        runTest {
+            val result = sut.getPrediction(" ")
+            assertTrue { result.exceptionOrNull() is IllegalArgumentException }
+        }
+
+    @Test
+    fun `When getting a prediction fails, Then return an error result`() = runTest {
+        val predictionId = "sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYI"
+        val errorMessage = "Could not fetch predication"
+
+        coEvery { predictionApi.getPrediction(predictionId) } returns Pair(
+            null,
+            IllegalStateException(errorMessage)
+        )
+        val result = sut.getPrediction(predictionId)
+
+        assertTrue { result.isFailure }
+        assertTrue { result.exceptionOrNull()?.message == errorMessage }
+    }
+
+    @Test
+    fun `When getting a prediction succeeds, Then return an success result`() = runTest {
+        val predictionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
+        val predictionOutputUrl =
+            "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
+
+        val prediction = Prediction(
+            id = predictionId,
+            output = listOf(predictionOutputUrl)
+        )
+        coEvery { predictionApi.getPrediction(predictionId) } returns Pair(prediction, null)
+
+        val result = sut.getPrediction(predictionId)
 
         assertTrue { result.isSuccess }
         assertTrue { result.getOrNull() == prediction }

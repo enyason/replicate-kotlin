@@ -88,6 +88,49 @@ class PredictionsApiTest {
     }
 
     @Test
+    fun `test getPrediction _API returns success response`() = runTest {
+        val responseBody = PredictionDTO(
+            id = id,
+            model = "some-model",
+            version = version,
+            input = input,
+            output = listOf("outputUrl"),
+            status = "succeeded"
+        )
+
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+                .setBody(gson.toJson(responseBody))
+        )
+
+        val response = sut.getPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertEquals(responseBody.toPrediction(), response.first)
+        assertNull(response.second)
+        assertEquals("GET", request.method)
+        assertEquals("/predictions/$id", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
+    fun `test getPrediction _API returns error response _exception is thrown`() = runTest {
+        mockWebServer.enqueue(
+            MockResponse().setResponseCode(401)
+        )
+
+        val response = sut.getPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertNull(response.first)
+        assertTrue(response.second is IllegalStateException)
+        assertEquals("GET", request.method)
+        assertEquals("/predictions/$id", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
     fun `test cancelPrediction _API returns success response`() = runTest {
         mockWebServer.enqueue(
             MockResponse()
