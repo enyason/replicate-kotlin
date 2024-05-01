@@ -92,7 +92,7 @@ class ReplicateClientTest {
     @Test
     fun `When getting a prediction fails, Then return an error result`() = runTest {
         val predictionId = "sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYI"
-        val errorMessage = "Could not fetch predication"
+        val errorMessage = "Could not fetch prediction"
 
         coEvery { predictionApi.getPrediction(predictionId) } returns Pair(
             null,
@@ -145,7 +145,7 @@ class ReplicateClientTest {
     @Test
     fun `test cancelPrediction _Call to API fails _Result is failure`() = runTest {
         val predictionId = "pId"
-        val errorMessage = "Could not cancel predication with ID: $predictionId"
+        val errorMessage = "Could not cancel prediction with ID: $predictionId"
         coEvery { predictionApi.cancelPrediction(any()) } returns Pair(false, IllegalStateException(errorMessage))
 
         val result = sut.cancelPrediction(predictionId)
