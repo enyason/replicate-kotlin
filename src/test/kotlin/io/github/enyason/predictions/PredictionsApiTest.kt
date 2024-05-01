@@ -12,6 +12,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -86,14 +87,6 @@ class PredictionsApiTest {
         assertTrue(request.headers["Authorization"] != null)
     }
 
-    private fun buildRequestBody(): Map<String, Any> {
-        val predictable = TestPredictable(versionId = version, input = input)
-        return mapOf(
-            "version" to predictable.versionId,
-            "input" to predictable.input
-        )
-    }
-
     @Test
     fun `test getPrediction _API returns success response`() = runTest {
         val responseBody = PredictionDTO(
@@ -135,5 +128,46 @@ class PredictionsApiTest {
         assertEquals("GET", request.method)
         assertEquals("/predictions/$id", request.path)
         assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
+    fun `test cancelPrediction _API returns success response`() = runTest {
+        mockWebServer.enqueue(
+            MockResponse()
+                .setResponseCode(200)
+        )
+
+        val response = sut.cancelPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertTrue(response.first)
+        assertNull(response.second)
+        assertEquals("POST", request.method)
+        assertEquals("/predictions/$id/cancel", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    @Test
+    fun `test cancelPrediction _API returns error response _exception is thrown`() = runTest {
+        mockWebServer.enqueue(
+            MockResponse().setResponseCode(500)
+        )
+
+        val response = sut.cancelPrediction(id)
+        val request = mockWebServer.takeRequest()
+
+        assertFalse(response.first)
+        assertTrue(response.second is IllegalStateException)
+        assertEquals("POST", request.method)
+        assertEquals("/predictions/$id/cancel", request.path)
+        assertTrue(request.headers["Authorization"] != null)
+    }
+
+    private fun buildRequestBody(): Map<String, Any> {
+        val predictable = TestPredictable(versionId = version, input = input)
+        return mapOf(
+            "version" to predictable.versionId,
+            "input" to predictable.input
+        )
     }
 }

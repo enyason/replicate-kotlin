@@ -28,7 +28,7 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(prediction, null)
         } else {
             val error = response.errorBody()?.toModel()
-            val message = error?.detail ?: "Could not create predication"
+            val message = error?.detail ?: "Could not create prediction"
             Pair(null, IllegalStateException(message))
         }
     }
@@ -40,8 +40,19 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(prediction, null)
         } else {
             val error = response.errorBody()?.toModel()
-            val message = error?.detail ?: "Could not fetch predication"
+            val message = error?.detail ?: "Could not fetch prediction"
             Pair(null, IllegalStateException(message))
+        }
+    }
+
+    suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
+        val response = service.cancelPrediction(predictionId)
+        return if (response.isSuccessful) {
+            Pair(true, null)
+        } else {
+            val error = response.errorBody()?.toModel()
+            val message = error?.detail ?: "Could not cancel prediction with ID: $predictionId"
+            Pair(false, IllegalStateException(message))
         }
     }
 }

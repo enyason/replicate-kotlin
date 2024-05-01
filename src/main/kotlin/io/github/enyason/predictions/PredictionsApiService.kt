@@ -26,4 +26,7 @@ interface PredictionsApiService {
 
     @GET("$ENDPOINT/{predictionId}")
     suspend fun getPrediction(@Path("predictionId") predictionId: String): Response<PredictionDTO>
+
+    @POST("$ENDPOINT/{predictionId}/cancel")
+    suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
 }
