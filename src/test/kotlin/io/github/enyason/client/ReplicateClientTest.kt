@@ -6,14 +6,15 @@ import io.github.enyason.predictions.PredictionsApi
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.test.assertFalse
 
 data class TestPredictable(
     override val modelId: String? = null,
@@ -41,7 +42,7 @@ class ReplicateClientTest {
     fun `Given invalid arguments, When creating a prediction, Then throw an exception`() = runTest {
         val predictable = TestPredictable(versionId = "", input = emptyMap())
         val result = sut.createPrediction(predictable)
-        assertTrue { result.exceptionOrNull() is IllegalArgumentException }
+        assertTrue { result.exception is IllegalArgumentException }
     }
 
     @Test
@@ -56,8 +57,8 @@ class ReplicateClientTest {
 
         val result = sut.createPrediction(predictable)
 
-        assertTrue { result.isFailure }
-        assertTrue { result.exceptionOrNull()?.message == errorMessage }
+        assertFalse { result.isSuccessful }
+        assertTrue { result.exception?.message == errorMessage }
     }
 
     @Test
@@ -78,15 +79,15 @@ class ReplicateClientTest {
 
         val result = sut.createPrediction(predictable)
 
-        assertTrue { result.isSuccess }
-        assertTrue { result.getOrNull() == prediction }
+        assertTrue { result.isSuccessful }
+        assertTrue { result.result == prediction }
     }
 
     @Test
     fun `Given empty prediction Id, When getting a prediction, Then throw an exception`() =
         runTest {
             val result = sut.getPrediction(" ")
-            assertTrue { result.exceptionOrNull() is IllegalArgumentException }
+            assertTrue { result.exception is IllegalArgumentException }
         }
 
     @Test
@@ -100,8 +101,8 @@ class ReplicateClientTest {
         )
         val result = sut.getPrediction(predictionId)
 
-        assertTrue { result.isFailure }
-        assertTrue { result.exceptionOrNull()?.message == errorMessage }
+        assertFalse { result.isSuccessful }
+        assertTrue { result.exception?.message == errorMessage }
     }
 
     @Test
@@ -118,8 +119,8 @@ class ReplicateClientTest {
 
         val result = sut.getPrediction(predictionId)
 
-        assertTrue { result.isSuccess }
-        assertTrue { result.getOrNull() == prediction }
+        assertTrue { result.isSuccessful }
+        assertTrue { result.result == prediction }
     }
 
     @Test
