@@ -26,12 +26,10 @@ interface Task<T> {
      */
     val isSuccessful: Boolean
 
-
     /**
      * isComplete is TRUE when the execution is successful and the task has a valid result
      */
     val isComplete: Boolean
-
 
     /**
      * isCanceled is TRUE when the prediction task has been canceled by the user
@@ -49,11 +47,10 @@ class DefaultTask<T>(
     override val exception: Exception?,
     override val isSuccessful: Boolean,
     override val isComplete: Boolean,
-    override val isCanceled: Boolean,
+    override val isCanceled: Boolean
 ) : Task<T> {
 
     override var service: Any? = null
-
 
     companion object {
 
@@ -63,7 +60,7 @@ class DefaultTask<T>(
                 isSuccessful = true,
                 exception = null,
                 isCanceled = prediction.isCanceled(),
-                isComplete = prediction.isCompleted(),
+                isComplete = prediction.isCompleted()
             ).apply { service = predictionAPI }
         }
 
