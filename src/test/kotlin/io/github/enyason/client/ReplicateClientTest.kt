@@ -13,8 +13,8 @@ import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 data class TestPredictable(
     override val modelId: String? = null,
