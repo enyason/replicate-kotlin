@@ -1,6 +1,8 @@
 package io.github.enyason.client
 
 import io.github.enyason.domain.models.Prediction
+import io.github.enyason.io.github.enyason.predictions.DefaultTask
+import io.github.enyason.io.github.enyason.predictions.Task
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictable.validate
 import io.github.enyason.predictable.validateId
@@ -17,7 +19,7 @@ class ReplicateClient(
     private val predictionAPI: PredictionsApi
 ) : Replicate {
 
-    override suspend fun createPrediction(predictable: Predictable): Result<Prediction> {
+    override suspend fun createPrediction(predictable: Predictable): Task<Prediction> {
         return try {
             predictable.validate()
             val request = mapOf(
@@ -26,24 +28,24 @@ class ReplicateClient(
             )
             val (prediction, error) = predictionAPI.createPrediction(request)
             when {
-                prediction != null -> Result.success(prediction)
-                else -> Result.failure(error ?: Throwable())
+                prediction != null -> DefaultTask.success(prediction, predictionAPI)
+                else -> DefaultTask.error(error)
             }
         } catch (error: Exception) {
-            Result.failure(error)
+            DefaultTask.error(error)
         }
     }
 
-    override suspend fun getPrediction(predictionId: String): Result<Prediction> {
+    override suspend fun getPrediction(predictionId: String): Task<Prediction> {
         return try {
             predictionId.validateId()
             val (prediction, error) = predictionAPI.getPrediction(predictionId)
             when {
-                prediction != null -> Result.success(prediction)
-                else -> Result.failure(error ?: Throwable())
+                prediction != null -> DefaultTask.success(prediction, predictionAPI)
+                else -> DefaultTask.error(error)
             }
         } catch (error: Exception) {
-            Result.failure(error)
+            DefaultTask.error(error)
         }
     }
 

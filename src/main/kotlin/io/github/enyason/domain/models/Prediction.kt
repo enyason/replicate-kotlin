@@ -16,3 +16,11 @@ data class Prediction(
     var metrics: Metrics? = null,
     var urls: Urls? = null
 )
+
+fun Prediction.isCompleted(): Boolean {
+    return status == PredictionStatus.SUCCEEDED
+}
+
+fun Prediction.isCanceled(): Boolean {
+    return status == PredictionStatus.CANCELED
+}
