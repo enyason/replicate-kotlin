@@ -1,4 +1,3 @@
-
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.domain.models.PredictionStatus.*
 import io.github.enyason.io.github.enyason.predictions.Task
@@ -25,7 +24,8 @@ suspend fun Task<Prediction>.await(delayInMillis: Long = 2000): Prediction {
         }
     }
 
-    val predictionsApiService = this.service as PredictionsApi
+    val predictionsApiService = (this.service as? PredictionsApi) ?: throw Exception("PredictionsApi service is null")
+
 
     var prediction = this.result
     val predictionId = result?.id
