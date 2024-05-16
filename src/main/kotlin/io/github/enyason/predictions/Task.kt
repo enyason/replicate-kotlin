@@ -1,4 +1,4 @@
-package io.github.enyason.io.github.enyason.predictions
+package io.github.enyason.predictions
 
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.domain.models.isCanceled
@@ -14,7 +14,7 @@ interface Task<T> {
     /**
      * The result of the task executed
      */
-    val result: T?
+    val result: T
 
     /**
      * The error which occurred from executing the task. It can be null
@@ -28,6 +28,7 @@ interface Task<T> {
 
     /**
      * isComplete is TRUE when the execution is successful and the task has a valid result
+     * For a [Prediction] it would mean the status is [io.github.enyason.domain.models.PredictionStatus.SUCCEEDED]
      */
     val isComplete: Boolean
 
@@ -36,37 +37,34 @@ interface Task<T> {
      */
     val isCanceled: Boolean
 
-    /**
-     * API service object which will be used to initiate server polling when [await] is called
-     */
-    val service: Any?
 }
 
+data object FailedTaskResult
+
 class DefaultTask<T>(
-    override val result: T?,
+    override val result: T,
     override val exception: Exception?,
     override val isSuccessful: Boolean,
     override val isComplete: Boolean,
     override val isCanceled: Boolean
 ) : Task<T> {
 
-    override var service: Any? = null
-
     companion object {
 
-        fun success(prediction: Prediction, predictionAPI: PredictionsApi): Task<Prediction> {
+        fun <T> success(result: T, isComplete: Boolean, isCanceled: Boolean): Task<T> {
             return DefaultTask(
-                result = prediction,
+                result = result,
                 isSuccessful = true,
                 exception = null,
-                isCanceled = prediction.isCanceled(),
-                isComplete = prediction.isCompleted()
-            ).apply { service = predictionAPI }
+                isComplete = isComplete,
+                isCanceled = isCanceled
+            )
         }
 
-        fun error(error: Exception?): Task<Prediction> {
+        @Suppress("UNCHECKED_CAST")
+        fun <T> error(error: Exception?): Task<T> {
             return DefaultTask(
-                result = null,
+                result = FailedTaskResult as T,
                 exception = error,
                 isSuccessful = false,
                 isCanceled = false,

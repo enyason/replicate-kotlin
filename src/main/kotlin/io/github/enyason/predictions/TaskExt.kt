@@ -1,7 +1,12 @@
+import io.github.enyason.client.ReplicateClient
 import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.PredictionStatus.*
-import io.github.enyason.io.github.enyason.predictions.Task
-import io.github.enyason.predictions.PredictionsApi
+import io.github.enyason.domain.models.PredictionStatus.CANCELED
+import io.github.enyason.domain.models.PredictionStatus.FAILED
+import io.github.enyason.domain.models.PredictionStatus.PROCESSING
+import io.github.enyason.domain.models.PredictionStatus.STARTING
+import io.github.enyason.domain.models.PredictionStatus.SUCCEEDED
+import io.github.enyason.domain.models.PredictionStatus.UNKNOWN
+import io.github.enyason.predictions.Task
 import kotlinx.coroutines.delay
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -10,46 +15,27 @@ import kotlin.coroutines.cancellation.CancellationException
  * succeeded. See [io.github.enyason.domain.models.PredictionStatus.SUCCEEDED]
  * [delayInMillis] is the time delay in milliseconds before another request to the server is triggered
  */
-suspend fun Task<Prediction>.await(delayInMillis: Long = 2000): Prediction {
+suspend fun Task<Prediction>.await(client: ReplicateClient, delayInMillis: Long = 2000): Prediction {
     if (isComplete) {
         val e = exception
         return if (e == null) {
             if (isCanceled) {
                 throw CancellationException("Task $this was cancelled.")
             } else {
-                result as Prediction
+                result
             }
         } else {
             throw e
         }
     }
 
-    val predictionsApiService = (this.service as? PredictionsApi) ?: throw Exception("PredictionsApi service is null")
+    delay(delayInMillis)
 
+    val predictionId = result.id
+    val task = client.getPrediction(predictionId)
 
-    var prediction = this.result
-    val predictionId = result?.id
-    if (prediction == null) {
-        throw Exception("Prediction object is null")
-    } else if (predictionId == null) {
-        throw Exception("Prediction ID is null")
-    } else {
-        fun predictionStatus() = prediction?.status ?: STARTING
-
-        suspend fun pollPrediction(predictionId: String) {
-            delay(delayInMillis)
-            println("polling prediction status")
-            prediction = predictionsApiService.getPrediction(predictionId).first
-        }
-
-        while (true) {
-            println(predictionStatus())
-            when (predictionStatus()) {
-                STARTING, PROCESSING -> pollPrediction(predictionId)
-                SUCCEEDED, FAILED, CANCELED, UNKNOWN -> break
-            }
-        }
+    return when (task.result.status) {
+        STARTING, PROCESSING -> task.await(client, delayInMillis)
+        SUCCEEDED, FAILED, CANCELED, UNKNOWN, null -> task.result
     }
-
-    return prediction ?: throw Exception("Prediction object is null")
 }

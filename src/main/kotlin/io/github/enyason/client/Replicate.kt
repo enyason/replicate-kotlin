@@ -2,7 +2,7 @@ package io.github.enyason.client
 
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.domain.models.Prediction
-import io.github.enyason.io.github.enyason.predictions.Task
+import io.github.enyason.predictions.Task
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 

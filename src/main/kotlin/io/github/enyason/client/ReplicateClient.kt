@@ -1,8 +1,10 @@
 package io.github.enyason.client
 
 import io.github.enyason.domain.models.Prediction
-import io.github.enyason.io.github.enyason.predictions.DefaultTask
-import io.github.enyason.io.github.enyason.predictions.Task
+import io.github.enyason.domain.models.isCanceled
+import io.github.enyason.domain.models.isCompleted
+import io.github.enyason.predictions.DefaultTask
+import io.github.enyason.predictions.Task
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictable.validate
 import io.github.enyason.predictable.validateId
@@ -28,7 +30,12 @@ class ReplicateClient(
             )
             val (prediction, error) = predictionAPI.createPrediction(request)
             when {
-                prediction != null -> DefaultTask.success(prediction, predictionAPI)
+                prediction != null -> DefaultTask.success(
+                    result = prediction,
+                    isComplete = prediction.isCompleted(),
+                    isCanceled = prediction.isCanceled()
+                )
+
                 else -> DefaultTask.error(error)
             }
         } catch (error: Exception) {
@@ -41,7 +48,12 @@ class ReplicateClient(
             predictionId.validateId()
             val (prediction, error) = predictionAPI.getPrediction(predictionId)
             when {
-                prediction != null -> DefaultTask.success(prediction, predictionAPI)
+                prediction != null -> DefaultTask.success(
+                    result = prediction,
+                    isComplete = prediction.isCompleted(),
+                    isCanceled = prediction.isCanceled()
+                )
+
                 else -> DefaultTask.error(error)
             }
         } catch (error: Exception) {

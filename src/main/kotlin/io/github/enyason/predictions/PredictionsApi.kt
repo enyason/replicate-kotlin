@@ -55,4 +55,5 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(false, IllegalStateException(message))
         }
     }
+
 }
