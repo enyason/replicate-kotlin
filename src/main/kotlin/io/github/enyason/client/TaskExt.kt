@@ -9,7 +9,7 @@ import kotlin.coroutines.cancellation.CancellationException
 /**
  * Awaits for the completion of a [Task] object representing a prediction.
  * This function repeatedly polls the prediction service (Replicate: https://replicate.com/)
- * using the provided [pollingStrategy] until the prediction reaches a successful state
+ * using the provided [Task.pollingStrategy] until the prediction reaches a successful state
  * @see [io.github.enyason.domain.models.PredictionStatus.SUCCEEDED].
  *
  * @return the final prediction object after successful completion,

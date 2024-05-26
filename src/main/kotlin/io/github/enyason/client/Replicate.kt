@@ -39,7 +39,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
      *
      * @param <T> The generic type representing the data structure of the prediction output.
      * @param predictable the object holding the model version and input data for the prediction
-     * @return a [Task] object representing the created prediction. You can call [await] on this object
+     * @return a [Task] object representing the created prediction. You can call await on this object
      *         to wait for the prediction to complete and retrieve the results.
      * @see io.github.enyason.domain.models.Prediction.output
      */
@@ -127,7 +127,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
         }
     }
 
-    suspend fun getPredictions(): Result<List<Prediction<*>>> {
+    fun getPredictions(): Result<List<Prediction<*>>> {
         TODO("Not yet implemented")
     }
 
