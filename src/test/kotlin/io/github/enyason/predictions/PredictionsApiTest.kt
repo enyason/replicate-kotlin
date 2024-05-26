@@ -1,22 +1,22 @@
-//package io.github.enyason.predictions
+// package io.github.enyason.predictions
 //
-//import com.google.gson.Gson
-//import io.github.enyason.base.ReplicateConfig
-//import io.github.enyason.client.TestPredictable
-//import io.github.enyason.domain.mappers.toPrediction
-//import io.github.enyason.predictions.models.PredictionDTO
-//import kotlinx.coroutines.test.runTest
-//import okhttp3.mockwebserver.MockResponse
-//import okhttp3.mockwebserver.MockWebServer
-//import kotlin.test.AfterTest
-//import kotlin.test.BeforeTest
-//import kotlin.test.Test
-//import kotlin.test.assertEquals
-//import kotlin.test.assertFalse
-//import kotlin.test.assertNull
-//import kotlin.test.assertTrue
+// import com.google.gson.Gson
+// import io.github.enyason.base.ReplicateConfig
+// import io.github.enyason.client.TestPredictable
+// import io.github.enyason.domain.mappers.toPrediction
+// import io.github.enyason.predictions.models.PredictionDTO
+// import kotlinx.coroutines.test.runTest
+// import okhttp3.mockwebserver.MockResponse
+// import okhttp3.mockwebserver.MockWebServer
+// import kotlin.test.AfterTest
+// import kotlin.test.BeforeTest
+// import kotlin.test.Test
+// import kotlin.test.assertEquals
+// import kotlin.test.assertFalse
+// import kotlin.test.assertNull
+// import kotlin.test.assertTrue
 //
-//class PredictionsApiTest {
+// class PredictionsApiTest {
 //
 //    private lateinit var mockWebServer: MockWebServer
 //    private lateinit var sut: PredictionsApi
@@ -170,4 +170,4 @@
 //            "input" to predictable.input
 //        )
 //    }
-//}
+// }

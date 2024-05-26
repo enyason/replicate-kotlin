@@ -38,9 +38,9 @@ data class Task<T>(
     /**
      * The strategy used to poll for the task's completion status and update its information.
      */
-    val pollingStrategy: PollingStrategy<T>?,
+    val pollingStrategy: PollingStrategy<T>?
 
-    ) {
+) {
 
     companion object {
 
@@ -72,4 +72,3 @@ data class Task<T>(
         }
     }
 }
-

@@ -62,7 +62,6 @@ class PredictionPollingStrategy<T>(
                 }
 
                 SUCCEEDED, FAILED, CANCELED, UNKNOWN, null -> break
-
             }
         }
 

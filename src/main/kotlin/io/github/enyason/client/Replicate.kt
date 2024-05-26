@@ -56,7 +56,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
 
             when {
                 prediction != null -> {
-
                     Task.success(
                         result = prediction,
                         isComplete = prediction.isCompleted(),
@@ -69,7 +68,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
                     Task.error(error)
                 }
             }
-
         } catch (error: Exception) {
             Task.error(error)
         }
@@ -92,7 +90,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
 
             when {
                 prediction != null -> {
-
                     Task.success(
                         result = prediction,
                         isComplete = prediction.isCompleted(),
@@ -104,15 +101,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
                 else -> {
                     Task.error(error)
                 }
-
             }
-
         } catch (error: Exception) {
             println("client try catch exception = $error")
             Task.error(error)
         }
-
-
     }
 
     /**
@@ -156,5 +149,4 @@ class Replicate(val predictionAPI: PredictionsApi) {
             return Replicate(predictionAPI = PredictionsApi(config))
         }
     }
-
 }

@@ -125,6 +125,7 @@ class ReplicateTest {
         assertTrue { result.isSuccessful }
         assertTrue { result.result == prediction }
     }
+
 //
     @Test
     fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {

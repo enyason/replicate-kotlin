@@ -2,21 +2,13 @@ package io.github.enyason.predictions
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
 import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
-import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.lang.reflect.Type
-import kotlin.coroutines.resume
 
 /**
  * This class receives and processes the responses gotten from [Replicate's](https://replicate.com) Predictions API
@@ -75,5 +67,4 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(false, IllegalStateException(message))
         }
     }
-
 }

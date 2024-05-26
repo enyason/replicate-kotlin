@@ -23,7 +23,6 @@ data class Prediction<T>(
     var urls: Urls? = null
 )
 
-
 fun <T> Prediction<T>.isCompleted(): Boolean {
     return status == PredictionStatus.SUCCEEDED
 }
