@@ -17,10 +17,10 @@ fun Predictable.validate() {
 }
 
 /**
-* Validates the current String object as a prediction ID.
-*
-* Throws an [IllegalArgumentException] if the String is blank
-*/
+ * Validates the current String object as a prediction ID.
+ *
+ * Throws an [IllegalArgumentException] if the String is blank
+ */
 fun String.validateId() {
     if (isBlank()) throw IllegalArgumentException("Provided an empty prediction ID")
 }

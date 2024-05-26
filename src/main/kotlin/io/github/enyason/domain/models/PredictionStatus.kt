@@ -11,7 +11,7 @@ enum class PredictionStatus {
     companion object {
         fun getStatus(status: String?): PredictionStatus {
             return status?.let { pStatus ->
-                values().find { pStatus.uppercase() == it.name }
+                entries.find { pStatus.uppercase() == it.name }
             } ?: UNKNOWN
         }
     }

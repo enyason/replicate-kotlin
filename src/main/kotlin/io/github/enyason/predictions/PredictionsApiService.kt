@@ -1,6 +1,8 @@
 package io.github.enyason.predictions
 
 import io.github.enyason.predictions.models.PredictionDTO
+import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -22,10 +24,10 @@ interface PredictionsApiService {
 
     @POST(ENDPOINT)
     @JvmSuppressWildcards
-    suspend fun createPrediction(@Body predictionRequest: Map<String, Any>): Response<PredictionDTO>
+    suspend fun createPrediction(@Body predictionRequest: Map<String, Any>): ResponseBody
 
     @GET("$ENDPOINT/{predictionId}")
-    suspend fun getPrediction(@Path("predictionId") predictionId: String): Response<PredictionDTO>
+    suspend fun getPrediction(@Path("predictionId") predictionId: String): ResponseBody
 
     @POST("$ENDPOINT/{predictionId}/cancel")
     suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
