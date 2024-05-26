@@ -31,19 +31,19 @@ import io.github.enyason.predictions.models.PredictionDTO
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
-class Replicate(val predictionAPI: PredictionsApi) {
+class Replicate private constructor(val predictionAPI: PredictionsApi) {
 
     /**
      * Creates a new prediction for a specific model version.
      * This method takes a [Predictable] object that encapsulates the inputs for the model.
      *
-     * @param <T> The generic type representing the data structure of the prediction output.
+     * @param <OUTPUT> The generic type representing the data structure of the prediction output.
      * @param predictable the object holding the model version and input data for the prediction
      * @return a [Task] object representing the created prediction. You can call await on this object
      *         to wait for the prediction to complete and retrieve the results.
      * @see io.github.enyason.domain.models.Prediction.output
      */
-    suspend inline fun <reified T> createPrediction(predictable: Predictable): Task<Prediction<T>> {
+    suspend inline fun <reified OUTPUT> createPrediction(predictable: Predictable): Task<Prediction<OUTPUT>> {
         return try {
             predictable.validate()
             val request = mapOf(
@@ -51,8 +51,8 @@ class Replicate(val predictionAPI: PredictionsApi) {
                 "input" to predictable.input
             )
 
-            val predictionDtoObjectType = object : TypeToken<PredictionDTO<T>>() {}.type
-            val (prediction, error) = predictionAPI.createPrediction<T>(request, predictionDtoObjectType)
+            val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
+            val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(request, predictionDtoObjectType)
 
             when {
                 prediction != null -> {
@@ -76,16 +76,16 @@ class Replicate(val predictionAPI: PredictionsApi) {
     /**
      * Retrieves the current status and results of a prediction identified by its ID.
      *
-     * @param <T> The generic type representing the data structure of the prediction output.
+     * @param <OUTPUT> The generic type representing the data structure of the prediction output.
      * @param predictionId the ID of the prediction to retrieve
      * @return a [Task] object containing the retrieved prediction information.
      * @see io.github.enyason.domain.models.Prediction.output
      */
-    suspend inline fun <reified T> getPrediction(predictionId: String): Task<Prediction<T>> {
+    suspend inline fun <reified OUTPUT> getPrediction(predictionId: String): Task<Prediction<OUTPUT>> {
         return try {
             predictionId.validateId()
-            val predictionDtoObjectType = object : TypeToken<PredictionDTO<T>>() {}.type
-            val (prediction, error) = predictionAPI.getPrediction<T>(predictionId, predictionDtoObjectType)
+            val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
+            val (prediction, error) = predictionAPI.getPrediction<OUTPUT>(predictionId, predictionDtoObjectType)
 
             when {
                 prediction != null -> {

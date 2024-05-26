@@ -6,13 +6,13 @@ package io.github.enyason.domain.models
  * [output] is a generic type because the shape of the data return from running the AI models differs
  * from each other
  */
-data class Prediction<T>(
+data class Prediction<OUTPUT>(
     var id: String? = null,
     var model: String? = null,
     var version: String? = null,
     var input: Map<String, Any?>? = null,
     var logs: String? = null,
-    var output: T? = null,
+    var output: OUTPUT? = null,
     var error: String? = null,
     var status: PredictionStatus? = null,
     var source: String? = null,
@@ -23,10 +23,10 @@ data class Prediction<T>(
     var urls: Urls? = null
 )
 
-fun <T> Prediction<T>.isCompleted(): Boolean {
+fun <OUTPUT> Prediction<OUTPUT>.isCompleted(): Boolean {
     return status == PredictionStatus.SUCCEEDED
 }
 
-fun <T> Prediction<T>.isCanceled(): Boolean {
+fun <OUTPUT> Prediction<OUTPUT>.isCanceled(): Boolean {
     return status == PredictionStatus.CANCELED
 }

@@ -8,7 +8,7 @@ import io.github.enyason.predictions.models.MetricsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.UrlsDTO
 
-fun <T> PredictionDTO<T>.toPrediction(): Prediction<T> {
+fun <OUTPUT> PredictionDTO<OUTPUT>.toPrediction(): Prediction<OUTPUT> {
     return Prediction(
         id = this.id.orEmpty(),
         model = this.model,

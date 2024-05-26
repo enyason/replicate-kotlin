@@ -7,12 +7,12 @@ import io.github.enyason.io.github.enyason.client.polling.PollingStrategy
  * [Task] defines an object type that holds information about an execution from [io.github.enyason.client.Replicate]
  * @author <a href="https://github.com/enyason">Emmanuel Enya </a>
  */
-data class Task<T>(
+data class Task<RESULT>(
 
     /**
      * The result of the task executed
      */
-    val result: T?,
+    val result: RESULT?,
 
     /**
      * The error which occurred from executing the task. It can be null
@@ -38,18 +38,18 @@ data class Task<T>(
     /**
      * The strategy used to poll for the task's completion status and update its information.
      */
-    val pollingStrategy: PollingStrategy<T>?
+    val pollingStrategy: PollingStrategy<RESULT>?
 
 ) {
 
     companion object {
 
-        fun <T> success(
-            result: T,
+        fun <RESULT> success(
+            result: RESULT,
             isComplete: Boolean,
             isCanceled: Boolean,
-            pollingStrategy: PollingStrategy<T>
-        ): Task<T> {
+            pollingStrategy: PollingStrategy<RESULT>
+        ): Task<RESULT> {
             return Task(
                 result = result,
                 isSuccessful = true,
@@ -60,7 +60,7 @@ data class Task<T>(
             )
         }
 
-        fun <T> error(error: Exception?): Task<T> {
+        fun <RESULT> error(error: Exception?): Task<RESULT> {
             return Task(
                 result = null,
                 exception = error,

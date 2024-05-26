@@ -17,10 +17,10 @@ import java.lang.reflect.Type
  * A concrete implementation of [PollingStrategy] specifically designed for polling prediction tasks.
  * This strategy utilizes a [PredictionsApi] instance to retrieve the status and results of a prediction.
  *
- * @param T The output type of data associated with the prediction results.
+ * @param <OUTPUT> The generic type representing the data structure of the prediction output.
  * @see [Prediction.output]
  */
-class PredictionPollingStrategy<T>(
+class PredictionPollingStrategy<OUTPUT>(
     /**
      * The [PredictionsApi] used to interact with the prediction service and retrieve updates.
      */
@@ -31,7 +31,7 @@ class PredictionPollingStrategy<T>(
      * Defaults to the value retrieved from [PredictionsApi.pollingDelayInMillis].
      */
     private val pollingDelayInMillis: Long = predictionsApi.pollingDelayInMillis
-) : PollingStrategy<Prediction<T>> {
+) : PollingStrategy<Prediction<OUTPUT>> {
 
     /**
      * Polls for the status and result of a prediction task.
@@ -42,17 +42,17 @@ class PredictionPollingStrategy<T>(
      * @param extraArgs optional arguments that might be used during polling (e.g., specifying prediction output type)
      * @return an updated `Task` object reflecting the final state of the prediction after polling
      */
-    override suspend fun pollTask(taskId: String, extraArgs: Map<String, Any>?): Task<Prediction<T>> {
+    override suspend fun pollTask(taskId: String, extraArgs: Map<String, Any>?): Task<Prediction<OUTPUT>> {
         val type: Type = extraArgs?.get(PREDICTION_OUTPUT_TYPE_ARG) as Type
         var status: PredictionStatus? = PredictionStatus.getStatus("starting")
-        var polledPrediction: Prediction<T>? = null
+        var polledPrediction: Prediction<OUTPUT>? = null
         var exception: Exception? = null
 
         while (true) {
             when (status) {
                 PredictionStatus.STARTING, PredictionStatus.PROCESSING -> {
                     delay(pollingDelayInMillis)
-                    val (prediction, error) = predictionsApi.getPrediction<T>(taskId, type)
+                    val (prediction, error) = predictionsApi.getPrediction<OUTPUT>(taskId, type)
                     if (error != null || prediction == null) {
                         exception = error
                         break

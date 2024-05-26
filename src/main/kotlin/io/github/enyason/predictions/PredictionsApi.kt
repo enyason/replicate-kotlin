@@ -29,12 +29,12 @@ class PredictionsApi(config: ReplicateConfig) {
 
     val pollingDelayInMillis = config.pollingDelayInMillis
 
-    suspend fun <T> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<T>?, Exception?> {
+    suspend fun <OUTPUT> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
         val responseBody = service.createPrediction(requestBody)
         return try {
             responseBody.use { body ->
                 val reader = responseBody.charStream()
-                val predictionDto = gson.fromJson<PredictionDTO<T>>(reader, type)
+                val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
                 val prediction = predictionDto.toPrediction()
                 Pair(prediction, null)
             }
@@ -43,12 +43,12 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun <T> getPrediction(predictionId: String, type: Type): Pair<Prediction<T>?, Exception?> {
+    suspend fun <OUTPUT> getPrediction(predictionId: String, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
         val responseBody = service.getPrediction(predictionId)
         return try {
             responseBody.use { body ->
                 val reader = body.charStream()
-                val predictionDto = gson.fromJson<PredictionDTO<T>>(reader, type)
+                val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
                 val prediction = predictionDto.toPrediction()
                 Pair(prediction, null)
             }

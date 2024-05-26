@@ -17,14 +17,14 @@ import kotlin.coroutines.cancellation.CancellationException
  * @throws CancellationException if the task was cancelled before completion.
  * @throws Exception if an error occurs while communicating with the prediction service.
  */
-suspend inline fun <reified T> Task<Prediction<T>>.await(): Prediction<T>? {
+suspend inline fun <reified OUTPUT> Task<Prediction<OUTPUT>>.await(): Prediction<OUTPUT>? {
     if (isComplete || isCanceled) {
         return result
     }
 
     val predictionId = result?.id.orEmpty()
 
-    val type = object : TypeToken<PredictionDTO<T>>() {}.type
+    val type = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
     val task = pollingStrategy?.pollTask(
         predictionId,
         mapOf(
