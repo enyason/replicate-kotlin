@@ -14,7 +14,7 @@ data class Prediction<OUTPUT>(
     var logs: String? = null,
     var output: OUTPUT? = null,
     var error: String? = null,
-    var status: PredictionStatus? = null,
+    var status: PredictionStatus = PredictionStatus.UNKNOWN,
     var source: String? = null,
     var createdAt: String? = null,
     var startedAt: String? = null,

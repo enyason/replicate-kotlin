@@ -44,7 +44,7 @@ class PredictionPollingStrategy<OUTPUT>(
      */
     override suspend fun pollTask(taskId: String, extraArgs: Map<String, Any>?): Task<Prediction<OUTPUT>> {
         val type: Type = extraArgs?.get(PREDICTION_OUTPUT_TYPE_ARG) as Type
-        var status: PredictionStatus? = PredictionStatus.STARTING
+        var status: PredictionStatus = PredictionStatus.STARTING
         var polledPrediction: Prediction<OUTPUT>? = null
         var exception: Exception? = null
 
@@ -61,7 +61,7 @@ class PredictionPollingStrategy<OUTPUT>(
                     status = prediction.status
                 }
 
-                SUCCEEDED, FAILED, CANCELED, UNKNOWN, null -> break
+                SUCCEEDED, FAILED, CANCELED, UNKNOWN -> break
             }
         }
 
