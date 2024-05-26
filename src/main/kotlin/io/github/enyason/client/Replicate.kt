@@ -31,7 +31,7 @@ import io.github.enyason.predictions.models.PredictionDTO
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
-class Replicate private constructor(val predictionAPI: PredictionsApi) {
+class Replicate(val predictionAPI: PredictionsApi) {
 
     /**
      * Creates a new prediction for a specific model version.
