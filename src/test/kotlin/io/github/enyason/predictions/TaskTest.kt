@@ -42,8 +42,6 @@ class TaskTest {
 
         val result = sut.await()
 
-        println(result?.status)
-
         assertEquals(true, result?.isCompleted())
         assertEquals(PredictionStatus.SUCCEEDED, result?.status)
         assertEquals(true, (result?.output is List<String>))

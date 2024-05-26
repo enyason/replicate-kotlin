@@ -85,7 +85,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
         return try {
             predictionId.validateId()
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<T>>() {}.type
-            println("client type = $predictionDtoObjectType")
             val (prediction, error) = predictionAPI.getPrediction<T>(predictionId, predictionDtoObjectType)
 
             when {
@@ -103,7 +102,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
                 }
             }
         } catch (error: Exception) {
-            println("client try catch exception = $error")
             Task.error(error)
         }
     }
