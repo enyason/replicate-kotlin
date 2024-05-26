@@ -48,31 +48,35 @@ class PredictionPollingStrategy<OUTPUT>(
         var polledPrediction: Prediction<OUTPUT>? = null
         var exception: Exception? = null
 
-        while (true) {
-            when (status) {
-                PredictionStatus.STARTING, PredictionStatus.PROCESSING -> {
-                    delay(pollingDelayInMillis)
-                    val (prediction, error) = predictionsApi.getPrediction<OUTPUT>(taskId, type)
-                    if (error != null || prediction == null) {
-                        exception = error
-                        break
+        try {
+            while (true) {
+                when (status) {
+                    PredictionStatus.STARTING, PredictionStatus.PROCESSING -> {
+                        delay(pollingDelayInMillis)
+                        val (prediction, error) = predictionsApi.getPrediction<OUTPUT>(taskId, type)
+                        if (error != null || prediction == null) {
+                            exception = error
+                            break
+                        }
+                        polledPrediction = prediction
+                        status = prediction.status
                     }
-                    polledPrediction = prediction
-                    status = prediction.status
+
+                    SUCCEEDED, FAILED, CANCELED, UNKNOWN -> break
                 }
-
-                SUCCEEDED, FAILED, CANCELED, UNKNOWN -> break
             }
-        }
 
-        return Task(
-            result = polledPrediction,
-            exception = exception,
-            isSuccessful = true,
-            isComplete = polledPrediction?.isCompleted() ?: false,
-            isCanceled = polledPrediction?.isCanceled() ?: false,
-            pollingStrategy = this
-        )
+            return Task(
+                result = polledPrediction,
+                exception = exception,
+                isSuccessful = true,
+                isComplete = polledPrediction?.isCompleted() ?: false,
+                isCanceled = polledPrediction?.isCanceled() ?: false,
+                pollingStrategy = this
+            )
+        } catch (error: Exception) {
+            return Task.error(error)
+        }
     }
 
     companion object {

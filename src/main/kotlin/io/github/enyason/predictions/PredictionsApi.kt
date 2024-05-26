@@ -8,6 +8,7 @@ import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
+import okhttp3.ResponseBody
 import java.lang.reflect.Type
 
 /**
@@ -32,12 +33,7 @@ class PredictionsApi(config: ReplicateConfig) {
     suspend fun <OUTPUT> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
         val responseBody = service.createPrediction(requestBody)
         return try {
-            responseBody.use { body ->
-                val reader = responseBody.charStream()
-                val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
-                val prediction = predictionDto.toPrediction()
-                Pair(prediction, null)
-            }
+            getResponse(responseBody, type)
         } catch (exception: Exception) {
             Pair(null, exception)
         }
@@ -46,15 +42,17 @@ class PredictionsApi(config: ReplicateConfig) {
     suspend fun <OUTPUT> getPrediction(predictionId: String, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
         val responseBody = service.getPrediction(predictionId)
         return try {
-            responseBody.use { body ->
-                val reader = body.charStream()
-                val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
-                val prediction = predictionDto.toPrediction()
-                Pair(prediction, null)
-            }
+            getResponse(responseBody, type)
         } catch (exception: Exception) {
             Pair(null, exception)
         }
+    }
+
+    private fun <OUTPUT> getResponse(responseBody: ResponseBody, type: Type) = responseBody.use { body ->
+        val reader = body.charStream()
+        val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
+        val prediction = predictionDto.toPrediction()
+        Pair(prediction, null)
     }
 
     suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
