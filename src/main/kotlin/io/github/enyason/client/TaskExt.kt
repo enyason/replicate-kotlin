@@ -18,17 +18,8 @@ import kotlin.coroutines.cancellation.CancellationException
  * @throws Exception if an error occurs while communicating with the prediction service.
  */
 suspend inline fun <reified T> Task<Prediction<T>>.await(): Prediction<T>? {
-    if (isComplete) {
-        val e = exception
-        return if (e == null) {
-            if (isCanceled) {
-                throw CancellationException("Task $this was cancelled.")
-            } else {
-                result!!
-            }
-        } else {
-            throw e
-        }
+    if (isComplete || isCanceled) {
+        return result
     }
 
     val predictionId = result?.id.orEmpty()

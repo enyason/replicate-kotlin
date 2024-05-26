@@ -53,54 +53,61 @@ class TaskTest {
         }
     }
 
-//
-//    @Test
-//    fun `Given a new prediction, When await fails due to server error, Then a failure status is returned`() = runTest {
-//        val predictionId = "xyzRTfj56"
-//        val predictionStarting = Prediction<String>(id = predictionId, status = PredictionStatus.STARTING)
-//        val predictionProcessing = Prediction<String>(id = predictionId, status = PredictionStatus.PROCESSING)
-//        val predictionSucceeded = Prediction<String>(id = predictionId, status = PredictionStatus.FAILED)
-//        val client = mockk<Replicate>()
-//
-//        coEvery { client.getPrediction<String>(predictionId) } returnsMany listOf(
-//            Task.success(predictionProcessing, isComplete = false, isCanceled = false),
-//            Task.success(predictionSucceeded, isComplete = true, isCanceled = false)
-//        )
-//
-//        val sut = with(predictionStarting) { Task.success(this, isComplete = isCompleted(), isCanceled = isCanceled()) }
-//
-//        val result = sut.await(client)
-//
-//        coVerify(exactly = 2) {
-//            client.getPrediction<String>(predictionId)
-//        }
-//
-//        assertEquals(PredictionStatus.FAILED, result?.status)
-//    }
-//
-//    @Test
-//    fun `Given a canceled prediction, When await is called, Then a failure status is returned`() = runTest {
-//        val predictionId = "xyzRTfj56"
-//        val predictionProcessing = Prediction<String>(id = predictionId, status = PredictionStatus.PROCESSING)
-//        val predictionSucceeded = Prediction<String>(id = predictionId, status = PredictionStatus.FAILED)
-//        val client = mockk<Replicate>()
-//
-//        coEvery { client.getPrediction<String>(predictionId) } returnsMany listOf(
-//            Task.success(predictionProcessing, isComplete = false, isCanceled = false),
-//            Task.success(predictionSucceeded, isComplete = true, isCanceled = false)
-//        )
-//
-//        val predictionStarting = Prediction<String>(id = predictionId, status = PredictionStatus.CANCELED)
-//        val sut = with(predictionStarting) { Task.success(this, isComplete = isCompleted(), isCanceled = isCanceled()) }
-//
-//
-//
-//        assertThrows<CancellationException> {
-//            runBlocking { sut.await(client) }
-//        }
-//
-//        coVerify(exactly = 0) {
-//            client.getPrediction<String>(predictionId)
-//        }
-//    }
+    @Test
+    fun `Given a new prediction, When await fails due to server error, Then a failure status is returned`() = runTest {
+        val predictionId = "xyzRTfj56"
+        val predictionStarting = Prediction<Any>(id = predictionId, status = PredictionStatus.STARTING)
+        val predictionFailed = Prediction<Any>(id = predictionId, status = PredictionStatus.FAILED)
+        val pollingStrategy = mockk<PollingStrategy<Prediction<Any>>>()
+
+        coEvery { pollingStrategy.pollTask(any(), any()) } returns Task.success(
+            predictionFailed,
+            isComplete = predictionFailed.isCompleted(),
+            isCanceled = predictionFailed.isCanceled(),
+            pollingStrategy = pollingStrategy
+        )
+
+        val sut = with(predictionStarting) {
+            Task.success(
+                this,
+                isComplete = isCompleted(),
+                isCanceled = isCanceled(),
+                pollingStrategy = pollingStrategy
+            )
+        }
+
+        val result = sut.await()
+
+        assertEquals(PredictionStatus.FAILED, result?.status)
+
+        coVerify {
+            pollingStrategy.pollTask(any(), any())
+        }
+    }
+
+    @Test
+    fun `Given a canceled prediction, When await is called, Then same prediction is returned with canceled status`() =
+        runTest {
+            val predictionId = "xyzRTfj56"
+            val predictionCancelled = Prediction<Any>(id = predictionId, status = PredictionStatus.CANCELED)
+            val pollingStrategy = mockk<PollingStrategy<Prediction<Any>>>()
+
+            val sut =
+                with(predictionCancelled) {
+                    Task.success(
+                        this,
+                        isComplete = isCompleted(),
+                        isCanceled = isCanceled(),
+                        pollingStrategy = pollingStrategy
+                    )
+                }
+
+            val result = sut.await()
+
+            assertEquals(PredictionStatus.CANCELED, result?.status)
+
+            coVerify(exactly = 0) {
+                pollingStrategy.pollTask(predictionId, any())
+            }
+        }
 }
