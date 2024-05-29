@@ -1,22 +1,25 @@
- package io.github.enyason.predictions
+package io.github.enyason.predictions
 
- import com.google.gson.Gson
- import io.github.enyason.base.ReplicateConfig
- import io.github.enyason.client.TestPredictable
- import io.github.enyason.domain.mappers.toPrediction
- import io.github.enyason.predictions.models.PredictionDTO
- import kotlinx.coroutines.test.runTest
- import okhttp3.mockwebserver.MockResponse
- import okhttp3.mockwebserver.MockWebServer
- import kotlin.test.AfterTest
- import kotlin.test.BeforeTest
- import kotlin.test.Test
- import kotlin.test.assertEquals
- import kotlin.test.assertFalse
- import kotlin.test.assertNull
- import kotlin.test.assertTrue
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import io.github.enyason.base.ReplicateConfig
+import io.github.enyason.client.TestPredictable
+import io.github.enyason.domain.mappers.toPrediction
+import io.github.enyason.domain.models.Prediction
+import io.github.enyason.predictions.models.PredictionDTO
+import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import retrofit2.HttpException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
- class PredictionsApiTest {
+class PredictionsApiTest {
 
     private lateinit var mockWebServer: MockWebServer
     private lateinit var sut: PredictionsApi
@@ -24,6 +27,7 @@
     private lateinit var id: String
     private lateinit var version: String
     private lateinit var input: Map<String, Any>
+    private val objectType = object : TypeToken<PredictionDTO<List<String>>>() {}.type
 
     @BeforeTest
     fun setup() {
@@ -59,7 +63,7 @@
                 .setBody(gson.toJson(responseBody))
         )
 
-        val response = sut.createPrediction(requestBody)
+        val response: Pair<Prediction<List<String>>?, Exception?> = sut.createPrediction(requestBody, objectType)
         val request = mockWebServer.takeRequest()
 
         assertEquals(responseBody.toPrediction(), response.first)
@@ -77,11 +81,11 @@
             MockResponse().setResponseCode(401)
         )
 
-        val response = sut.createPrediction(requestBody)
+        val response: Pair<Prediction<List<String>>?, Exception?> = sut.createPrediction(requestBody, objectType)
         val request = mockWebServer.takeRequest()
 
         assertNull(response.first)
-        assertTrue(response.second is IllegalStateException)
+        assertTrue(response.second is HttpException)
         assertEquals("POST", request.method)
         assertEquals("/predictions", request.path)
         assertTrue(request.headers["Authorization"] != null)
@@ -104,7 +108,7 @@
                 .setBody(gson.toJson(responseBody))
         )
 
-        val response = sut.getPrediction(id)
+        val response: Pair<Prediction<List<String>>?, Exception?> = sut.getPrediction(id, objectType)
         val request = mockWebServer.takeRequest()
 
         assertEquals(responseBody.toPrediction(), response.first)
@@ -120,11 +124,11 @@
             MockResponse().setResponseCode(401)
         )
 
-        val response = sut.getPrediction(id)
+        val response: Pair<Prediction<List<String>>?, Exception?> = sut.getPrediction(id, objectType)
         val request = mockWebServer.takeRequest()
 
         assertNull(response.first)
-        assertTrue(response.second is IllegalStateException)
+        assertTrue(response.second is HttpException)
         assertEquals("GET", request.method)
         assertEquals("/predictions/$id", request.path)
         assertTrue(request.headers["Authorization"] != null)
@@ -170,4 +174,4 @@
             "input" to predictable.input
         )
     }
- }
+}

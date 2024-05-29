@@ -4,6 +4,7 @@ import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
@@ -74,11 +75,12 @@ class ReplicateTest {
 
         val prediction = Prediction(
             id = "random-id",
-            output = listOf<Any>(predictionOutputUrl)
+            output = listOf(predictionOutputUrl)
         )
-        coEvery { predictionApi.createPrediction<List<Any>>(any(), any()) } returns Pair(prediction, null)
+        coEvery { predictionApi.createPrediction<List<String>>(any(), any()) } returns Pair(prediction, null)
+        every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val result = sut.createPrediction<List<Any>>(predictable)
+        val result = sut.createPrediction<List<String>>(predictable)
 
         assertTrue { result.isSuccessful }
         assertTrue { result.result == prediction }
@@ -119,6 +121,7 @@ class ReplicateTest {
             output = listOf<Any>(predictionOutputUrl)
         )
         coEvery { predictionApi.getPrediction<List<Any>>(predictionId, any()) } returns Pair(prediction, null)
+        every { predictionApi.pollingDelayInMillis } returns 2000L
 
         val result = sut.getPrediction<Any>(predictionId)
 

@@ -31,8 +31,8 @@ class PredictionsApi(config: ReplicateConfig) {
     val pollingDelayInMillis = config.pollingDelayInMillis
 
     suspend fun <OUTPUT> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
-        val responseBody = service.createPrediction(requestBody)
         return try {
+            val responseBody = service.createPrediction(requestBody)
             getResponse(responseBody, type)
         } catch (exception: Exception) {
             Pair(null, exception)
@@ -40,8 +40,8 @@ class PredictionsApi(config: ReplicateConfig) {
     }
 
     suspend fun <OUTPUT> getPrediction(predictionId: String, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
-        val responseBody = service.getPrediction(predictionId)
         return try {
+            val responseBody = service.getPrediction(predictionId)
             getResponse(responseBody, type)
         } catch (exception: Exception) {
             Pair(null, exception)
