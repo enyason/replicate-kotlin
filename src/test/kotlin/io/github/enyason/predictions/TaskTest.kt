@@ -42,13 +42,11 @@ class TaskTest {
 
         val result = sut.await()
 
+        coVerify { pollingStrategy.pollTask(any(), any()) }
         assertEquals(true, result?.isCompleted())
         assertEquals(PredictionStatus.SUCCEEDED, result?.status)
         assertEquals(true, (result?.output is List<String>))
 
-        coVerify {
-            pollingStrategy.pollTask(any(), any())
-        }
     }
 
     @Test
@@ -76,11 +74,8 @@ class TaskTest {
 
         val result = sut.await()
 
+        coVerify { pollingStrategy.pollTask(any(), any()) }
         assertEquals(PredictionStatus.FAILED, result?.status)
-
-        coVerify {
-            pollingStrategy.pollTask(any(), any())
-        }
     }
 
     @Test
@@ -102,10 +97,7 @@ class TaskTest {
 
             val result = sut.await()
 
+            coVerify(exactly = 0) { pollingStrategy.pollTask(predictionId, any()) }
             assertEquals(PredictionStatus.CANCELED, result?.status)
-
-            coVerify(exactly = 0) {
-                pollingStrategy.pollTask(predictionId, any())
-            }
         }
 }
