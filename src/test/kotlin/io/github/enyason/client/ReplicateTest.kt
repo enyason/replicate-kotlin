@@ -61,7 +61,6 @@ class ReplicateTest {
         assertTrue { task.exception?.message == errorMessage }
     }
 
-    //
     @Test
     fun `When creating a prediction succeeds, Then return an success result`() = runTest {
         val predictable = TestPredictable(
@@ -84,7 +83,6 @@ class ReplicateTest {
         assertTrue { task.result == prediction }
     }
 
-    //
     @Test
     fun `Given empty prediction Id, When getting a prediction, Then throw an exception`() =
         runTest {
@@ -107,7 +105,6 @@ class ReplicateTest {
         assertTrue { task.exception?.message == errorMessage }
     }
 
-    //
     @Test
     fun `When getting a prediction succeeds, Then return an success result`() = runTest {
         val predictionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
@@ -126,7 +123,6 @@ class ReplicateTest {
         assertTrue { task.result == prediction }
     }
 
-    //
     @Test
     fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {
         val result = sut.cancelPrediction("")
