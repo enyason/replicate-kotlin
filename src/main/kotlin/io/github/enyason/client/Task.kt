@@ -1,4 +1,4 @@
-package io.github.enyason.io.github.enyason.client
+package io.github.enyason.client
 
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.io.github.enyason.client.polling.PollingStrategy
@@ -18,11 +18,6 @@ data class Task<RESULT>(
      * The error which occurred from executing the task. It can be null
      */
     val exception: Exception?,
-
-    /**
-     * isSuccessful determines whether the execution failed or not
-     */
-    val isSuccessful: Boolean,
 
     /**
      * isComplete is TRUE when the execution is successful and the task has a valid result
@@ -52,7 +47,6 @@ data class Task<RESULT>(
         ): Task<RESULT> {
             return Task(
                 result = result,
-                isSuccessful = true,
                 exception = null,
                 isComplete = isComplete,
                 isCanceled = isCanceled,
@@ -64,7 +58,6 @@ data class Task<RESULT>(
             return Task(
                 result = null,
                 exception = error,
-                isSuccessful = false,
                 isCanceled = false,
                 isComplete = false,
                 pollingStrategy = null

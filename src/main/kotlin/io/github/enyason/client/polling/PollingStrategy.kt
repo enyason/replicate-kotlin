@@ -1,6 +1,6 @@
 package io.github.enyason.io.github.enyason.client.polling
 
-import io.github.enyason.io.github.enyason.client.Task
+import io.github.enyason.client.Task
 
 /**
  * An interface defining a strategy for polling the status and results of a [Task].

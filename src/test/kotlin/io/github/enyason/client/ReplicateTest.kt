@@ -14,7 +14,6 @@ import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 data class TestPredictable(
@@ -56,10 +55,10 @@ class ReplicateTest {
             IllegalStateException(errorMessage)
         )
 
-        val result = sut.createPrediction<Any>(predictable)
+        val task = sut.createPrediction<Any>(predictable)
 
-        assertFalse { result.isSuccessful }
-        assertTrue { result.exception?.message == errorMessage }
+        assertTrue { task.result == null }
+        assertTrue { task.exception?.message == errorMessage }
     }
 
     //
@@ -80,10 +79,9 @@ class ReplicateTest {
         coEvery { predictionApi.createPrediction<List<String>>(any(), any()) } returns Pair(prediction, null)
         every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val result = sut.createPrediction<List<String>>(predictable)
+        val task = sut.createPrediction<List<String>>(predictable)
 
-        assertTrue { result.isSuccessful }
-        assertTrue { result.result == prediction }
+        assertTrue { task.result == prediction }
     }
 
     //
@@ -103,10 +101,10 @@ class ReplicateTest {
             null,
             IllegalStateException(errorMessage)
         )
-        val result = sut.getPrediction<Any>(predictionId)
+        val task = sut.getPrediction<Any>(predictionId)
 
-        assertFalse { result.isSuccessful }
-        assertTrue { result.exception?.message == errorMessage }
+        assertTrue { task.result == null }
+        assertTrue { task.exception?.message == errorMessage }
     }
 
     //
@@ -123,13 +121,12 @@ class ReplicateTest {
         coEvery { predictionApi.getPrediction<List<Any>>(predictionId, any()) } returns Pair(prediction, null)
         every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val result = sut.getPrediction<Any>(predictionId)
+        val task = sut.getPrediction<Any>(predictionId)
 
-        assertTrue { result.isSuccessful }
-        assertTrue { result.result == prediction }
+        assertTrue { task.result == prediction }
     }
 
-//
+    //
     @Test
     fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {
         val result = sut.cancelPrediction("")

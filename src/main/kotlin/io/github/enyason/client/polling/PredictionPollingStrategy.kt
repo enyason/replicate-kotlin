@@ -1,5 +1,6 @@
-package io.github.enyason.io.github.enyason.client.polling
+package io.github.enyason.client.polling
 
+import io.github.enyason.client.Task
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.domain.models.PredictionStatus
 import io.github.enyason.domain.models.PredictionStatus.CANCELED
@@ -8,7 +9,7 @@ import io.github.enyason.domain.models.PredictionStatus.SUCCEEDED
 import io.github.enyason.domain.models.PredictionStatus.UNKNOWN
 import io.github.enyason.domain.models.isCanceled
 import io.github.enyason.domain.models.isCompleted
-import io.github.enyason.io.github.enyason.client.Task
+import io.github.enyason.io.github.enyason.client.polling.PollingStrategy
 import io.github.enyason.predictions.PredictionsApi
 import kotlinx.coroutines.delay
 import java.lang.reflect.Type
@@ -69,7 +70,6 @@ class PredictionPollingStrategy<OUTPUT>(
             return Task(
                 result = polledPrediction,
                 exception = exception,
-                isSuccessful = true,
                 isComplete = polledPrediction?.isCompleted() ?: false,
                 isCanceled = polledPrediction?.isCanceled() ?: false,
                 pollingStrategy = this

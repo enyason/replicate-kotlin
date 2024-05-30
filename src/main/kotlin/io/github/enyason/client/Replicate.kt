@@ -2,11 +2,10 @@ package io.github.enyason.client
 
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
+import io.github.enyason.client.polling.PredictionPollingStrategy
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.domain.models.isCanceled
 import io.github.enyason.domain.models.isCompleted
-import io.github.enyason.io.github.enyason.client.Task
-import io.github.enyason.io.github.enyason.client.polling.PredictionPollingStrategy
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictable.validate
 import io.github.enyason.predictable.validateId
