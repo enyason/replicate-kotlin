@@ -46,7 +46,6 @@ class TaskTest {
         assertEquals(true, result?.isCompleted())
         assertEquals(PredictionStatus.SUCCEEDED, result?.status)
         assertEquals(true, (result?.output is List<String>))
-
     }
 
     @Test
