@@ -7,7 +7,7 @@ package io.github.enyason.domain.models
  * from each other
  */
 data class Prediction<OUTPUT>(
-    var id: String? = null,
+    var id: String,
     var model: String? = null,
     var version: String? = null,
     var input: Map<String, Any?>? = null,
