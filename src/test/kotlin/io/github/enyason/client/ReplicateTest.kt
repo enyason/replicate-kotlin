@@ -4,15 +4,16 @@ import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictable.Predictable
 import io.github.enyason.predictions.PredictionsApi
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.unmockkAll
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 data class TestPredictable(
@@ -21,15 +22,15 @@ data class TestPredictable(
     override val input: Map<String, Any>
 ) : Predictable
 
-class ReplicateClientTest {
+class ReplicateTest {
 
     private lateinit var predictionApi: PredictionsApi
-    private lateinit var sut: ReplicateClient
+    private lateinit var sut: Replicate
 
     @BeforeTest
     fun before() {
         predictionApi = mockk()
-        sut = ReplicateClient(predictionAPI = predictionApi)
+        sut = Replicate(predictionAPI = predictionApi)
     }
 
     @AfterTest
@@ -40,8 +41,8 @@ class ReplicateClientTest {
     @Test
     fun `Given invalid arguments, When creating a prediction, Then throw an exception`() = runTest {
         val predictable = TestPredictable(versionId = "", input = emptyMap())
-        val result = sut.createPrediction(predictable)
-        assertTrue { result.exceptionOrNull() is IllegalArgumentException }
+        val result = sut.createPrediction<Any>(predictable)
+        assertTrue { result.exception is IllegalArgumentException }
     }
 
     @Test
@@ -49,15 +50,15 @@ class ReplicateClientTest {
         val predictable =
             TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
         val errorMessage = "Could not create a prediction, try again"
-        coEvery { predictionApi.createPrediction(any()) } returns Pair(
+        coEvery { predictionApi.createPrediction<Any>(any(), any()) } returns Pair(
             null,
             IllegalStateException(errorMessage)
         )
 
-        val result = sut.createPrediction(predictable)
+        val task = sut.createPrediction<Any>(predictable)
 
-        assertTrue { result.isFailure }
-        assertTrue { result.exceptionOrNull()?.message == errorMessage }
+        assertTrue { task.result == null }
+        assertTrue { task.exception?.message == errorMessage }
     }
 
     @Test
@@ -74,19 +75,19 @@ class ReplicateClientTest {
             id = "random-id",
             output = listOf(predictionOutputUrl)
         )
-        coEvery { predictionApi.createPrediction(any()) } returns Pair(prediction, null)
+        coEvery { predictionApi.createPrediction<List<String>>(any(), any()) } returns Pair(prediction, null)
+        every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val result = sut.createPrediction(predictable)
+        val task = sut.createPrediction<List<String>>(predictable)
 
-        assertTrue { result.isSuccess }
-        assertTrue { result.getOrNull() == prediction }
+        assertTrue { task.result == prediction }
     }
 
     @Test
     fun `Given empty prediction Id, When getting a prediction, Then throw an exception`() =
         runTest {
-            val result = sut.getPrediction(" ")
-            assertTrue { result.exceptionOrNull() is IllegalArgumentException }
+            val result = sut.getPrediction<Any>(" ")
+            assertTrue { result.exception is IllegalArgumentException }
         }
 
     @Test
@@ -94,14 +95,14 @@ class ReplicateClientTest {
         val predictionId = "sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYI"
         val errorMessage = "Could not fetch prediction"
 
-        coEvery { predictionApi.getPrediction(predictionId) } returns Pair(
+        coEvery { predictionApi.getPrediction<Any>(predictionId, any()) } returns Pair(
             null,
             IllegalStateException(errorMessage)
         )
-        val result = sut.getPrediction(predictionId)
+        val task = sut.getPrediction<Any>(predictionId)
 
-        assertTrue { result.isFailure }
-        assertTrue { result.exceptionOrNull()?.message == errorMessage }
+        assertTrue { task.result == null }
+        assertTrue { task.exception?.message == errorMessage }
     }
 
     @Test
@@ -112,20 +113,19 @@ class ReplicateClientTest {
 
         val prediction = Prediction(
             id = predictionId,
-            output = listOf(predictionOutputUrl)
+            output = listOf<Any>(predictionOutputUrl)
         )
-        coEvery { predictionApi.getPrediction(predictionId) } returns Pair(prediction, null)
+        coEvery { predictionApi.getPrediction<List<Any>>(predictionId, any()) } returns Pair(prediction, null)
+        every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val result = sut.getPrediction(predictionId)
+        val task = sut.getPrediction<Any>(predictionId)
 
-        assertTrue { result.isSuccess }
-        assertTrue { result.getOrNull() == prediction }
+        assertTrue { task.result == prediction }
     }
 
     @Test
     fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {
         val result = sut.cancelPrediction("")
-
         assertTrue(result.exceptionOrNull() is IllegalArgumentException)
         assertTrue(result.isFailure)
         assertEquals("Provided an empty prediction ID", result.exceptionOrNull()?.message)

@@ -1,14 +1,20 @@
 package io.github.enyason.domain.models
 
-data class Prediction(
-    var id: String? = null,
+/**
+ * A [Prediction] is the result from running an AI model on [Replicate](https://replicate.com)
+ *
+ * [output] is a generic type because the shape of the data return from running the AI models differs
+ * from each other
+ */
+data class Prediction<OUTPUT>(
+    var id: String,
     var model: String? = null,
     var version: String? = null,
     var input: Map<String, Any?>? = null,
     var logs: String? = null,
-    var output: Any? = null,
+    var output: OUTPUT? = null,
     var error: String? = null,
-    var status: PredictionStatus? = null,
+    var status: PredictionStatus = PredictionStatus.UNKNOWN,
     var source: String? = null,
     var createdAt: String? = null,
     var startedAt: String? = null,
@@ -16,3 +22,11 @@ data class Prediction(
     var metrics: Metrics? = null,
     var urls: Urls? = null
 )
+
+fun <OUTPUT> Prediction<OUTPUT>.isCompleted(): Boolean {
+    return status == PredictionStatus.SUCCEEDED
+}
+
+fun <OUTPUT> Prediction<OUTPUT>.isCanceled(): Boolean {
+    return status == PredictionStatus.CANCELED
+}

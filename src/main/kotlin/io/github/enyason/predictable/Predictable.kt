@@ -2,6 +2,7 @@ package io.github.enyason.predictable
 
 /**
  * Describes a model to be executed by replicate
+ * The generic type indicates the output of the [io.github.enyason.domain.models.Prediction]
  * @author Emmanuel Enya
  */
 interface Predictable {
