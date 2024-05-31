@@ -59,7 +59,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
                     )
                 }
 
@@ -92,7 +92,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
                     )
                 }
 

@@ -9,7 +9,6 @@ import io.github.enyason.domain.models.PredictionStatus.SUCCEEDED
 import io.github.enyason.domain.models.PredictionStatus.UNKNOWN
 import io.github.enyason.domain.models.isCanceled
 import io.github.enyason.domain.models.isCompleted
-import io.github.enyason.io.github.enyason.client.polling.PollingStrategy
 import io.github.enyason.predictions.PredictionsApi
 import kotlinx.coroutines.delay
 import java.lang.reflect.Type
