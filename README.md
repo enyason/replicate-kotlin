@@ -52,7 +52,7 @@ val client = Replicate.client(config)
 
 > [!WARNING]
 > Don't store your API token in code.
-> Instead, you can explore secure storage solutions provided by your target platform (e.g.Android Secrets Gradle Plugin for Android)
+> Instead, you can explore secure storage solutions provided by your target platform (e.g. Android Secrets Gradle Plugin for Android)
 
 ### Create a Prediction
 
@@ -154,7 +154,7 @@ Reference: https://replicate.com/docs/reference/http
 
 ## Contributing
 
-Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING) for more details.
+Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) for more details.
 
 ## License
 
