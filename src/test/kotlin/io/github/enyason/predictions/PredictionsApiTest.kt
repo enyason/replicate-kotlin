@@ -4,8 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.client.TestPredictable
-import io.github.enyason.domain.predictions.toPrediction
 import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.toPrediction
 import io.github.enyason.predictions.models.PredictionDTO
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse

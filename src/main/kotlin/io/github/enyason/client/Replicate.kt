@@ -6,11 +6,11 @@ import io.github.enyason.client.polling.PredictionPollingStrategy
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.isCanceled
 import io.github.enyason.domain.predictions.models.isCompleted
+import io.github.enyason.predictions.PredictionsApi
+import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.predictable.Predictable
 import io.github.enyason.predictions.predictable.validate
 import io.github.enyason.predictions.predictable.validateId
-import io.github.enyason.predictions.PredictionsApi
-import io.github.enyason.predictions.models.PredictionDTO
 
 /**
  * A client class to interact with the [Replicate](https://replicate.com) API.
