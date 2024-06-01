@@ -43,7 +43,7 @@ Ensure your changes are accompanied by relevant unit tests written in Kotlin. Th
 
 ## Licensing
 
-All contributions must comply with the LicenseName under which this project is released. Refer to the [LICENSE](LICENSE) file for details.
+All contributions must comply with the License under which this project is released. Refer to the [LICENSE](LICENSE) file for details.
 
 
 ## Additional Notes
