@@ -8,6 +8,21 @@ We appreciate your interest in contributing to Replicate-Kotlin! This document o
 1. **Fork the Repository:** Create a fork of the Replicate-Kotlin repository on GitHub. This allows you to make changes and submit pull requests.
 2. **Set Up Development Environment:** Ensure you have the necessary tools to develop in Kotlin. Refer to the [official Kotlin documentation](https://kotlinlang.org/docs/home.html) for setup instructions.
 
+## Coding Style
+
+1. **Follow Kotlin Conventions:** Adhere to the standard Kotlin coding conventions for consistent code formatting and readability.
+2. **Enforce Formatting with Ktlint:** We use Ktlint, a static code analysis tool, to automatically format Kotlin code according to a defined style.
+    * **Check for Ktlint errors:** Run the following command in your terminal to check for formatting inconsistencies:
+    * 
+    ```bash
+    ./gradlew ktlintCheck
+    ```
+    * **Fix formatting issues:** If the `ktlintCheck` command reports errors, you can fix them automatically using the following command:
+
+    ```bash
+    ./gradlew ktlintFormat
+    ```
+
 ## Identify an Issue
 
 You can choose an existing issue to start working on or suggest a new issue for a feature or bug fix [here](https://github.com/enyason/replicate-kotlin/issues)
