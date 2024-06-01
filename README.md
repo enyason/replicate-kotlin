@@ -162,3 +162,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Contact
 
 For support or questions, please contact us at [enyason95@gmail.com](mailto:enyason95@gmail.com).
+
+## Contributors
+
+<a href="https://github.com/enyason/replicate-kotlin/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=enyason/replicate-kotlin&max=500&columns=20" alt="Contributors"/>
+</a>
