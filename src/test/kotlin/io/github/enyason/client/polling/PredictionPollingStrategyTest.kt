@@ -1,8 +1,8 @@
 package io.github.enyason.client.polling
 
 import com.google.gson.reflect.TypeToken
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.PredictionStatus
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.models.PredictionStatus
 import io.github.enyason.predictions.PredictionsApi
 import io.mockk.coEvery
 import io.mockk.coVerify

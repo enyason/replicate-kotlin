@@ -1,7 +1,7 @@
 package io.github.enyason.client
 
 import io.github.enyason.client.polling.PollingStrategy
-import io.github.enyason.domain.models.Prediction
+import io.github.enyason.domain.predictions.models.Prediction
 
 /**
  * [Task] defines an object type that holds information about an execution from [io.github.enyason.client.Replicate]

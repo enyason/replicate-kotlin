@@ -1,14 +1,14 @@
 package io.github.enyason.client.polling
 
 import io.github.enyason.client.Task
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.PredictionStatus
-import io.github.enyason.domain.models.PredictionStatus.CANCELED
-import io.github.enyason.domain.models.PredictionStatus.FAILED
-import io.github.enyason.domain.models.PredictionStatus.SUCCEEDED
-import io.github.enyason.domain.models.PredictionStatus.UNKNOWN
-import io.github.enyason.domain.models.isCanceled
-import io.github.enyason.domain.models.isCompleted
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.models.PredictionStatus
+import io.github.enyason.domain.predictions.models.PredictionStatus.CANCELED
+import io.github.enyason.domain.predictions.models.PredictionStatus.FAILED
+import io.github.enyason.domain.predictions.models.PredictionStatus.SUCCEEDED
+import io.github.enyason.domain.predictions.models.PredictionStatus.UNKNOWN
+import io.github.enyason.domain.predictions.models.isCanceled
+import io.github.enyason.domain.predictions.models.isCompleted
 import io.github.enyason.predictions.PredictionsApi
 import kotlinx.coroutines.delay
 import java.lang.reflect.Type

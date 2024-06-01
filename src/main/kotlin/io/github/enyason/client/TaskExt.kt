@@ -2,7 +2,7 @@ package io.github.enyason.client
 
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.client.polling.PredictionPollingStrategy.Companion.PREDICTION_OUTPUT_TYPE_ARG
-import io.github.enyason.domain.models.Prediction
+import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import kotlin.coroutines.cancellation.CancellationException
 

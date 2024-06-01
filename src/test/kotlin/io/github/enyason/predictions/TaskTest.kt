@@ -3,10 +3,10 @@ package io.github.enyason.predictions
 import io.github.enyason.client.Task
 import io.github.enyason.client.await
 import io.github.enyason.client.polling.PollingStrategy
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.PredictionStatus
-import io.github.enyason.domain.models.isCanceled
-import io.github.enyason.domain.models.isCompleted
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.models.PredictionStatus
+import io.github.enyason.domain.predictions.models.isCanceled
+import io.github.enyason.domain.predictions.models.isCompleted
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
