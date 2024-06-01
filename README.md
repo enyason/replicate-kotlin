@@ -72,7 +72,7 @@ Retrieve a prediction by its ID.
 ```kotlin
 suspend fun getPredictionExample(predictionId: String) {
     val predictionTask = client.getPrediction<String>(predictionId)
-    println(prediction.output)
+    println(predictionTask.result)
 }
 ```
 
