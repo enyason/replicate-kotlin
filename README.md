@@ -9,11 +9,12 @@ Replicate-Kotlin is a wrapper around [Replicate’s API](https://replicate.com/)
 3. [Installation](#installation)
 4. [Usage](#usage)
 5. [Example](#example)
-5. [Configuration](#configuration)
-6. [API Reference](#api-reference)
-7. [Contributing](#contributing)
-8. [License](#license)
-9. [Contact](#contact)
+6. [Configuration](#configuration)
+7. [API Reference](#api-reference)
+8. [Contributing](#contributing)
+9. [License](#license)
+10. [Contact](#contact)
+11. [Contributors](#contributors)
 
 ## Overview
 
@@ -50,8 +51,8 @@ val client = Replicate.client(config)
 ```
 
 > [!WARNING]
-> Don't store your APi token in code.
-> Instead, you can explore secure storage solutions provided by your target platform(e.g.Android Secrets Gradle Plugin for Android)
+> Don't store your API token in code.
+> Instead, you can explore secure storage solutions provided by your target platform (e.g.Android Secrets Gradle Plugin for Android)
 
 ### Create a Prediction
 
