@@ -13,7 +13,6 @@ We appreciate your interest in contributing to Replicate-Kotlin! This document o
 1. **Follow Kotlin Conventions:** Adhere to the standard Kotlin coding conventions for consistent code formatting and readability.
 2. **Enforce Formatting with Ktlint:** We use Ktlint, a static code analysis tool, to automatically format Kotlin code according to a defined style.
     * **Check for Ktlint errors:** Run the following command in your terminal to check for formatting inconsistencies:
-    * 
     ```bash
     ./gradlew ktlintCheck
     ```
@@ -25,7 +24,7 @@ We appreciate your interest in contributing to Replicate-Kotlin! This document o
 
 ## Identify an Issue
 
-You can choose an existing issue to start working on or suggest a new issue for a feature or bug fix [here](https://github.com/enyason/replicate-kotlin/issues)
+You can choose an existing issue to start working on or suggest a new issue for a feature or bug fix [here](https://github.com/enyason/replicate-kotlin/issues).
 
 ## Work on a Branch
 
