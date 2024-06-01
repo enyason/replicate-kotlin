@@ -13,6 +13,7 @@ We appreciate your interest in contributing to Replicate-Kotlin! This document o
 1. **Follow Kotlin Conventions:** Adhere to the standard Kotlin coding conventions for consistent code formatting and readability.
 2. **Enforce Formatting with Ktlint:** We use Ktlint, a static code analysis tool, to automatically format Kotlin code according to a defined style.
     * **Check for Ktlint errors:** Run the following command in your terminal to check for formatting inconsistencies:
+
     ```bash
     ./gradlew ktlintCheck
     ```
@@ -28,18 +29,17 @@ You can choose an existing issue to start working on or suggest a new issue for 
 
 ## Work on a Branch
 
-Create a new branch from the `main` branch for your specific contribution. 
+Create a new branch from the `main` branch for your specific contribution.
+
+## Testing
+
+Ensure your changes are accompanied by relevant unit tests written in Kotlin. This helps maintain code quality and prevent regressions.
 
 ## Pull Requests
 
 1. **Push Your Changes:** Once your changes are complete and tested, push your branch to your forked repository on GitHub.
 2. **Create a Pull Request:** Go to your forked repository on GitHub and create a pull request from your branch to the main branch of the upstream repository.
 3. **Address Feedback:** We will review your pull request and provide feedback. Be prepared to address any comments or suggestions before your contribution is merged.
-
-
-## Testing
-
-Ensure your changes are accompanied by relevant unit tests written in Kotlin. This helps maintain code quality and prevent regressions.
 
 ## Licensing
 
