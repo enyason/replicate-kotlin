@@ -1,8 +1,8 @@
 package io.github.enyason.client
 
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.predictable.Predictable
+import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.predictions.PredictionsApi
+import io.github.enyason.predictions.predictable.Predictable
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

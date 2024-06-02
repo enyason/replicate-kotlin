@@ -1,4 +1,4 @@
-package io.github.enyason.predictable
+package io.github.enyason.predictions.predictable
 
 /**
  * Validates the current state of the Predictable object.

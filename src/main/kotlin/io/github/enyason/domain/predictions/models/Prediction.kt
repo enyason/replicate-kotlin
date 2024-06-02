@@ -1,4 +1,4 @@
-package io.github.enyason.domain.models
+package io.github.enyason.domain.predictions.models
 
 /**
  * A [Prediction] is the result from running an AI model on [Replicate](https://replicate.com)

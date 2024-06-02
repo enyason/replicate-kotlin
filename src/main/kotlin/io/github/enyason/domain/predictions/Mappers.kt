@@ -1,9 +1,9 @@
-package io.github.enyason.domain.mappers
+package io.github.enyason.domain.predictions
 
-import io.github.enyason.domain.models.Metrics
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.PredictionStatus
-import io.github.enyason.domain.models.Urls
+import io.github.enyason.domain.predictions.models.Metrics
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.models.PredictionStatus
+import io.github.enyason.domain.predictions.models.Urls
 import io.github.enyason.predictions.models.MetricsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.UrlsDTO

@@ -3,14 +3,14 @@ package io.github.enyason.client
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.client.polling.PredictionPollingStrategy
-import io.github.enyason.domain.models.Prediction
-import io.github.enyason.domain.models.isCanceled
-import io.github.enyason.domain.models.isCompleted
-import io.github.enyason.predictable.Predictable
-import io.github.enyason.predictable.validate
-import io.github.enyason.predictable.validateId
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.models.isCanceled
+import io.github.enyason.domain.predictions.models.isCompleted
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.models.PredictionDTO
+import io.github.enyason.predictions.predictable.Predictable
+import io.github.enyason.predictions.predictable.validate
+import io.github.enyason.predictions.predictable.validateId
 
 /**
  * A client class to interact with the [Replicate](https://replicate.com) API.
@@ -59,7 +59,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
                     )
                 }
 
@@ -92,7 +92,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
                     )
                 }
 
