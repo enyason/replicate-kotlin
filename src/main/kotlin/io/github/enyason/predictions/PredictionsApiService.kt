@@ -4,8 +4,10 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Streaming
 
 /**
  * The main interface for communicating with [Replicate's](https://replicate.com) Predictions API
@@ -29,4 +31,13 @@ interface PredictionsApiService {
 
     @POST("$ENDPOINT/{predictionId}/cancel")
     suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
+
+    @POST("models/{model_id}/predictions")
+    @JvmSuppressWildcards
+    @Headers("Accept: text/event-stream")
+    @Streaming
+    suspend fun runModel(
+        @Path("model_id") modelId: String,
+        @Body predictionRequest: Map<String, Any>
+    ): ResponseBody
 }

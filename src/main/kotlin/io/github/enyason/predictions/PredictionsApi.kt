@@ -65,4 +65,23 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(false, IllegalStateException(message))
         }
     }
+
+    suspend fun runModel(modelId: String, requestBody: Map<String, Any>) {
+        val responseBody = service.runModel(modelId, requestBody)
+        responseBody.let {
+            val source = it.source()
+            while (!source.exhausted()) {
+                val line = source.readUtf8Line()
+                line?.let {
+                    println(it)
+                    if (it.startsWith("data: ")) {
+                        val data = it.substring(6) // Extract the data after "data: "
+                        println("Received data: $data")
+                        // Process the data as needed
+                    }
+                }
+            }
+
+        }
+    }
 }
