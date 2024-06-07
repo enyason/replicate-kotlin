@@ -11,6 +11,8 @@ import io.github.enyason.predictable.validate
 import io.github.enyason.predictable.validateId
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.models.PredictionDTO
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 /**
  * A client class to interact with the [Replicate](https://replicate.com) API.
@@ -126,6 +128,15 @@ class Replicate(val predictionAPI: PredictionsApi) {
 
     fun getPredictions(): Result<List<Prediction<*>>> {
         TODO("Not yet implemented")
+    }
+
+    suspend fun createPrediction(modelOwner: String, modelName: String, requestBody: Map<String, Any>): Flow<String> {
+        requestBody.toMutableMap()["stream"] = true
+        return try {
+            predictionAPI.createPrediction(modelOwner, modelName, requestBody)
+        } catch (error: Exception) {
+            flowOf(error.localizedMessage)
+        }
     }
 
     companion object {
