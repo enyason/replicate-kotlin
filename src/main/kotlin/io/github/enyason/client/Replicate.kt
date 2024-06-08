@@ -130,8 +130,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
         TODO("Not yet implemented")
     }
 
-    suspend fun createPrediction(modelOwner: String, modelName: String, requestBody: Map<String, Any>): Flow<String> {
-        requestBody.toMutableMap()["stream"] = true
+    suspend fun createPrediction(modelOwner: String, modelName: String, input: Map<String, Any>): Flow<String> {
+        val requestBody = mapOf(
+            "input" to input,
+            "stream" to true
+        )
         return try {
             predictionAPI.createPrediction(modelOwner, modelName, requestBody)
         } catch (error: Exception) {
