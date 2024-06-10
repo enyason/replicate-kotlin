@@ -12,7 +12,6 @@ import io.github.enyason.predictable.validateId
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.models.PredictionDTO
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 
 /**
  * A client class to interact with the [Replicate](https://replicate.com) API.
@@ -131,15 +130,8 @@ class Replicate(val predictionAPI: PredictionsApi) {
     }
 
     suspend fun createPrediction(modelOwner: String, modelName: String, input: Map<String, Any>): Flow<String> {
-        val requestBody = mapOf(
-            "input" to input,
-            "stream" to true
-        )
-        return try {
-            predictionAPI.createPrediction(modelOwner, modelName, requestBody)
-        } catch (error: Exception) {
-            flowOf(error.localizedMessage)
-        }
+        val requestBody = mapOf("input" to input, "stream" to true)
+        return predictionAPI.createPrediction(modelOwner, modelName, requestBody)
     }
 
     companion object {

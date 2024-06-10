@@ -4,20 +4,19 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.base.StreamingEventSourceListener
 import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.Response
 import okhttp3.ResponseBody
-import okhttp3.sse.EventSource
-import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.channels.awaitClose
 
 /**
  * This class receives and processes the responses gotten from [Replicate's](https://replicate.com) Predictions API
@@ -77,69 +76,38 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun createPrediction(modelOwner: String, modelName: String, requestBody: Map<String, Any>) = flow {
-        try {
+    suspend fun createPrediction(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
+        callbackFlow {
             val predictionResponse = service.createPrediction(modelOwner, modelName, requestBody)
             if (!predictionResponse.isSuccessful) {
-                emit(predictionResponse.errorBody()?.toModel()?.detail ?: "Could not create prediction with model name: $modelName")
-                return@flow
+                val errorMessage = predictionResponse.errorBody()?.toModel()?.detail
+                    ?: "Could not create prediction with model name: $modelName"
+                throw Exception(errorMessage)
             }
-
             predictionResponse.body()?.let { predictionDto ->
                 EventSources
-                    .createFactory(client())
+                    .createFactory(sseClient())
                     .newEventSource(
-                        request = request(predictionDto.urls?.stream.orEmpty()),
-                        listener = listener { emit(it) }
+                        request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
+                        listener = StreamingEventSourceListener { data -> this.trySend(data) }
                     )
             }
-        } catch (exception: Exception) {
-            emit(exception.localizedMessage)
+
+            awaitClose()
         }
-    }
 
-    private fun listener(onEvent: suspend (String) -> Unit): EventSourceListener {
-        val eventSourceListener = object : EventSourceListener() {
-            override fun onOpen(eventSource: EventSource, response: Response) {
-                super.onOpen(eventSource, response)
-                println("Connection Opened")
-            }
-
-            override fun onClosed(eventSource: EventSource) {
-                super.onClosed(eventSource)
-                println("Connection Closed")
-            }
-
-            override fun onEvent(
-                eventSource: EventSource,
-                id: String?,
-                type: String?,
-                data: String
-            ) {
-                super.onEvent(eventSource, id, type, data)
-                println(data)
-//                onEvent(data)
-            }
-
-            override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
-                super.onFailure(eventSource, t, response)
-                println("On Failure -: ${t?.message}")
-            }
+    companion object {
+        private fun sseRequest(url: String): Request {
+            return Request.Builder()
+                .url(url)
+                .addHeader("Accept", "text/event-stream")
+                .build()
         }
-        return eventSourceListener
-    }
 
-    private fun client() = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(10, TimeUnit.MINUTES)
-        .writeTimeout(10, TimeUnit.MINUTES)
-        .build()
-
-    private fun request(url: String): Request {
-        println("STREAM URL is: $url")
-        return Request.Builder()
-            .url(url)
-            .addHeader("Accept", "text/event-stream")
+        private fun sseClient() = OkHttpClient.Builder()
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.MINUTES)
+            .writeTimeout(10, TimeUnit.MINUTES)
             .build()
     }
 }

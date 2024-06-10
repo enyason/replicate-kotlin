@@ -7,7 +7,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Url
 
 /**
  * The main interface for communicating with [Replicate's](https://replicate.com) Predictions API
@@ -34,16 +33,10 @@ interface PredictionsApiService {
 
     @POST("models/{modelOwner}/{modelName}/predictions")
     @JvmSuppressWildcards
-//    @Headers("Accept: text/event-stream")
-//    @Streaming
     suspend fun createPrediction(
         @Path("modelOwner") modelOwner: String,
         @Path("modelName") modelName: String,
         @Body predictionRequest: Map<String, Any>
     ): Response<PredictionDTO<Any>>
 
-    @GET
-//    @Streaming
-//    @Headers("Accept: text/event-stream")
-    suspend fun stream(@Url uri: String): Response<ResponseBody>
 }
