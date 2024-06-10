@@ -9,6 +9,7 @@ import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -16,7 +17,6 @@ import okhttp3.ResponseBody
 import okhttp3.sse.EventSources
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.channels.awaitClose
 
 /**
  * This class receives and processes the responses gotten from [Replicate's](https://replicate.com) Predictions API

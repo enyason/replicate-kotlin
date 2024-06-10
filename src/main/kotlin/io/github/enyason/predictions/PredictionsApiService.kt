@@ -38,5 +38,4 @@ interface PredictionsApiService {
         @Path("modelName") modelName: String,
         @Body predictionRequest: Map<String, Any>
     ): Response<PredictionDTO<Any>>
-
 }
