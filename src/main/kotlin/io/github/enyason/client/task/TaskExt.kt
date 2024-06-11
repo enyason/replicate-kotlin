@@ -1,4 +1,4 @@
-package io.github.enyason.client
+package io.github.enyason.client.task
 
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.client.polling.PredictionPollingStrategy.Companion.PREDICTION_OUTPUT_TYPE_ARG

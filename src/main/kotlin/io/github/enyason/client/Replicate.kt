@@ -3,6 +3,7 @@ package io.github.enyason.client
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.client.polling.PredictionPollingStrategy
+import io.github.enyason.client.task.Task
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.isCanceled
 import io.github.enyason.domain.predictions.models.isCompleted
