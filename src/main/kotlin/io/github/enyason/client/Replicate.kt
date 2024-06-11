@@ -43,12 +43,16 @@ class Replicate(val predictionAPI: PredictionsApi) {
      *         to wait for the prediction to complete and retrieve the results.
      * @see io.github.enyason.domain.models.Prediction.output
      */
-    suspend inline fun <reified OUTPUT> createPrediction(predictable: Predictable): Task<Prediction<OUTPUT>> {
+    suspend inline fun <reified OUTPUT> createPrediction(
+        predictable: Predictable,
+        stream: Boolean = false
+    ): Task<Prediction<OUTPUT>> {
         return try {
             predictable.validate()
             val request = mapOf(
                 "version" to predictable.versionId,
-                "input" to predictable.input
+                "input" to predictable.input,
+                "stream" to stream
             )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
