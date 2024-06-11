@@ -97,14 +97,14 @@ class PredictionsApi(config: ReplicateConfig) {
         }
 
     companion object {
-        private fun sseRequest(url: String): Request {
+        fun sseRequest(url: String): Request {
             return Request.Builder()
                 .url(url)
                 .addHeader("Accept", "text/event-stream")
                 .build()
         }
 
-        private fun sseClient() = OkHttpClient.Builder()
+        fun sseClient() = OkHttpClient.Builder()
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.MINUTES)
             .writeTimeout(10, TimeUnit.MINUTES)

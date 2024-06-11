@@ -39,6 +39,9 @@ class Replicate(val predictionAPI: PredictionsApi) {
      *
      * @param <OUTPUT> The generic type representing the data structure of the prediction output.
      * @param predictable the object holding the model version and input data for the prediction
+     * @param stream specify the stream option to request a URL to receive streaming output using server-sent events (SSE).
+     * If the requested model version supports streaming, then the returned prediction will have a stream entry in its
+     * urls property with a URL that you can use to stream the output.
      * @return a [Task] object representing the created prediction. You can call await on this object
      *         to wait for the prediction to complete and retrieve the results.
      * @see io.github.enyason.domain.models.Prediction.output
