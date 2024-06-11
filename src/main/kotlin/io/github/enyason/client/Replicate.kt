@@ -129,9 +129,9 @@ class Replicate(val predictionAPI: PredictionsApi) {
         TODO("Not yet implemented")
     }
 
-    suspend fun createPrediction(modelOwner: String, modelName: String, input: Map<String, Any>): Flow<String> {
+    suspend fun stream(modelOwner: String, modelName: String, input: Map<String, Any>): Flow<String> {
         val requestBody = mapOf("input" to input, "stream" to true)
-        return predictionAPI.createPrediction(modelOwner, modelName, requestBody)
+        return predictionAPI.stream(modelOwner, modelName, requestBody)
     }
 
     companion object {

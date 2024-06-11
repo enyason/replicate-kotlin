@@ -76,7 +76,7 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun createPrediction(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
+    suspend fun stream(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
         callbackFlow {
             val predictionResponse = service.createPrediction(modelOwner, modelName, requestBody)
             if (!predictionResponse.isSuccessful) {
