@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * The main interface for communicating with [Replicate's](https://replicate.com) Predictions API
@@ -29,4 +30,7 @@ interface PredictionsApiService {
 
     @POST("$ENDPOINT/{predictionId}/cancel")
     suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
+
+    @GET(ENDPOINT)
+    suspend fun listPredictions(@Query("cursor") cursor: String): ResponseBody
 }

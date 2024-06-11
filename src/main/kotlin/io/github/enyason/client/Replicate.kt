@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.client.polling.PredictionPollingStrategy
 import io.github.enyason.client.task.Task
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.isCanceled
 import io.github.enyason.domain.predictions.models.isCompleted
@@ -52,7 +53,10 @@ class Replicate(val predictionAPI: PredictionsApi) {
             )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
-            val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(request, predictionDtoObjectType)
+            val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(
+                request,
+                predictionDtoObjectType
+            )
 
             when {
                 prediction != null -> {
@@ -85,7 +89,10 @@ class Replicate(val predictionAPI: PredictionsApi) {
         return try {
             predictionId.validateId()
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
-            val (prediction, error) = predictionAPI.getPrediction<OUTPUT>(predictionId, predictionDtoObjectType)
+            val (prediction, error) = predictionAPI.getPrediction<OUTPUT>(
+                predictionId,
+                predictionDtoObjectType
+            )
 
             when {
                 prediction != null -> {
@@ -125,8 +132,34 @@ class Replicate(val predictionAPI: PredictionsApi) {
         }
     }
 
-    fun getPredictions(): Result<List<Prediction<*>>> {
-        TODO("Not yet implemented")
+    /**
+     * Get a paginated list of predictions that you have created from the API and the website.
+     * This method returns *100* records per page.
+     * @param cursor A pointer to the page of predictions you want to fetch. When left empty (""),
+     * it returns the first page. Subsequent calls can use:
+     * - the [PaginatedPredictions.next] cursor gotten from the previous response to retrieve
+     *   the next page of results.
+     * - the [PaginatedPredictions.previous] cursor gotten from the --- response to retrieve
+     *   the previous page of results.
+     * @return A [Result] object:
+     * - [Result.success]: Contains a [PaginatedPredictions] object with the retrieved predictions
+     * data if successful.
+     * - [Result.failure]: Contains an error object with an exception.
+     */
+    suspend fun listPredictions(cursor: String = ""): Result<PaginatedPredictions> {
+        return try {
+            val (predictions, error) = predictionAPI.listPredictions(cursor)
+
+            when {
+                predictions != null -> {
+                    Result.success(predictions)
+                }
+
+                else -> Result.failure(error ?: Throwable())
+            }
+        } catch (error: Exception) {
+            Result.failure(error)
+        }
     }
 
     companion object {

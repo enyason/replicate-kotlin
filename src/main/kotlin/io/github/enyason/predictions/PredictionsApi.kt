@@ -4,8 +4,11 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.toPaginatedPredictions
 import io.github.enyason.domain.predictions.toPrediction
+import io.github.enyason.predictions.models.PaginatedPredictionsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
 import okhttp3.ResponseBody
@@ -30,7 +33,10 @@ class PredictionsApi(config: ReplicateConfig) {
 
     val pollingDelayInMillis = config.pollingDelayInMillis
 
-    suspend fun <OUTPUT> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
+    suspend fun <OUTPUT> createPrediction(
+        requestBody: Map<String, Any>,
+        type: Type
+    ): Pair<Prediction<OUTPUT>?, Exception?> {
         return try {
             val responseBody = service.createPrediction(requestBody)
             getResponse(responseBody, type)
@@ -48,11 +54,19 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    private fun <OUTPUT> getResponse(responseBody: ResponseBody, type: Type) = responseBody.use { body ->
+    private fun <OUTPUT> getResponse(responseBody: ResponseBody, type: Type) =
+        responseBody.use { body ->
+            val reader = body.charStream()
+            val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
+            val prediction = predictionDto.toPrediction()
+            Pair(prediction, null)
+        }
+
+    private fun getResponse(responseBody: ResponseBody) = responseBody.use { body ->
         val reader = body.charStream()
-        val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
-        val prediction = predictionDto.toPrediction()
-        Pair(prediction, null)
+        val paginatedPredictionsDto = gson.fromJson(reader, PaginatedPredictionsDTO::class.java)
+        val paginatedPredictions = paginatedPredictionsDto.toPaginatedPredictions()
+        Pair(paginatedPredictions, null)
     }
 
     suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
@@ -63,6 +77,15 @@ class PredictionsApi(config: ReplicateConfig) {
             val error = response.errorBody()?.toModel()
             val message = error?.detail ?: "Could not cancel prediction with ID: $predictionId"
             Pair(false, IllegalStateException(message))
+        }
+    }
+
+    suspend fun listPredictions(cursor: String): Pair<PaginatedPredictions?, Exception?> {
+        return try {
+            val responseBody = service.listPredictions(cursor)
+            getResponse(responseBody)
+        } catch (exception: Exception) {
+            Pair(null, exception)
         }
     }
 }
