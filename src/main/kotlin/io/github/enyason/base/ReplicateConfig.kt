@@ -26,7 +26,7 @@ data class ReplicateConfig(
     /**
      * Specifies the kind of information from the request/response to print to console
      */
-    val loggingLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BASIC,
+    val loggingLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY,
 
     /**
      * Specifies the time delay in milliseconds for polling the server to get the completed state of

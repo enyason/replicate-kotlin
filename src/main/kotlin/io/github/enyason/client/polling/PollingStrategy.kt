@@ -1,4 +1,4 @@
-package io.github.enyason.io.github.enyason.client.polling
+package io.github.enyason.client.polling
 
 import io.github.enyason.client.Task
 

@@ -1,4 +1,4 @@
-package io.github.enyason.domain.models
+package io.github.enyason.domain.predictions.models
 
 data class Metrics(
     var predictTime: Double? = null,

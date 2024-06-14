@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.toPrediction
 import io.github.enyason.base.StreamingEventSourceListener
 import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction

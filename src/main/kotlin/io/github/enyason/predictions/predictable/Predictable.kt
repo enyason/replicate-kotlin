@@ -1,4 +1,4 @@
-package io.github.enyason.predictable
+package io.github.enyason.predictions.predictable
 
 /**
  * Describes a model to be executed by replicate
