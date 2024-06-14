@@ -14,9 +14,8 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit) : EventSourceL
         super.onEvent(eventSource, id, type, data)
         when (EventType.getType(type)) {
             EventType.OUTPUT -> onEvent(data)
-            EventType.DONE -> {} // Todo: handle done EventType
-            EventType.ERROR -> {} // Todo: handle error EventType
-            EventType.UNKNOWN -> {} // Todo: treat as ERROR
+            EventType.DONE -> {}
+            EventType.ERROR, EventType.UNKNOWN -> throw Exception("on event error")
         }
     }
 
