@@ -9,12 +9,14 @@ import io.github.enyason.domain.mappers.toPrediction
 import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.ResponseBody
 import okhttp3.sse.EventSources
+import retrofit2.Response
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
@@ -76,25 +78,36 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun stream(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
+    suspend fun streamWithModel(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
         callbackFlow {
-            val predictionResponse = service.createPrediction(modelOwner, modelName, requestBody)
-            if (!predictionResponse.isSuccessful) {
-                val errorMessage = predictionResponse.errorBody()?.toModel()?.detail
-                    ?: "Could not create prediction with model name: $modelName"
-                throw Exception(errorMessage)
-            }
-            predictionResponse.body()?.let { predictionDto ->
-                EventSources
-                    .createFactory(sseClient())
-                    .newEventSource(
-                        request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
-                        listener = StreamingEventSourceListener { data -> this.trySend(data) }
-                    )
-            }
-
-            awaitClose()
+            val predictionResponse = service.createPredictionWithModel(modelOwner, modelName, requestBody)
+            this.produceResponse(predictionResponse, modelName)
         }
+
+    suspend fun streamWithDeployment(deploymentOwner: String, deploymentName: String, requestBody: Map<String, Any>) =
+        callbackFlow {
+            val predictionResponse = service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
+            this.produceResponse(predictionResponse, deploymentName)
+        }
+
+    private suspend fun ProducerScope<String>.produceResponse(predictionResponse: Response<PredictionDTO<Any>>, entityName: String) {
+        if (!predictionResponse.isSuccessful) {
+            val errorMessage = predictionResponse.errorBody()?.toModel()?.detail
+                ?: "Could not create prediction with entity name: $entityName"
+            throw Exception(errorMessage)
+        }
+
+        predictionResponse.body()?.let { predictionDto ->
+            EventSources
+                .createFactory(sseClient())
+                .newEventSource(
+                    request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
+                    listener = StreamingEventSourceListener { data -> this.trySend(data) }
+                )
+        }
+
+        awaitClose()
+    }
 
     companion object {
         fun sseRequest(url: String): Request {

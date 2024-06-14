@@ -33,9 +33,17 @@ interface PredictionsApiService {
 
     @POST("models/{modelOwner}/{modelName}/predictions")
     @JvmSuppressWildcards
-    suspend fun createPrediction(
+    suspend fun createPredictionWithModel(
         @Path("modelOwner") modelOwner: String,
         @Path("modelName") modelName: String,
+        @Body predictionRequest: Map<String, Any>
+    ): Response<PredictionDTO<Any>>
+
+    @POST("deployments/{deploymentOwner}/{deploymentName}/predictions")
+    @JvmSuppressWildcards
+    suspend fun createPredictionWithDeployment(
+        @Path("deploymentOwner") deploymentOwner: String,
+        @Path("deploymentName") deploymentName: String,
         @Body predictionRequest: Map<String, Any>
     ): Response<PredictionDTO<Any>>
 }

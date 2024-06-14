@@ -12,11 +12,28 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit) : EventSourceL
         data: String
     ) {
         super.onEvent(eventSource, id, type, data)
-        onEvent(data)
+        when (EventType.getType(type)) {
+            EventType.OUTPUT -> onEvent(data)
+            EventType.DONE -> {} // Todo: handle done EventType
+            EventType.ERROR -> {} // Todo: handle error EventType
+            EventType.UNKNOWN -> {} // Todo: treat as ERROR
+        }
     }
 
     override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
         super.onFailure(eventSource, t, response)
         t?.run { throw this }
+    }
+
+    enum class EventType {
+        OUTPUT, DONE, ERROR, UNKNOWN;
+
+        companion object {
+            fun getType(type: String?): EventType {
+                return type?.let { eType ->
+                    entries.find { eType.uppercase() == it.name }
+                } ?: UNKNOWN
+            }
+        }
     }
 }
