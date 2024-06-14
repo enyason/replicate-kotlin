@@ -4,11 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.base.StreamingEventSourceListener
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.toPrediction
-import io.github.enyason.base.StreamingEventSourceListener
-import io.github.enyason.domain.mappers.toPrediction
-import io.github.enyason.domain.models.Prediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
 import kotlinx.coroutines.channels.ProducerScope
@@ -88,11 +86,15 @@ class PredictionsApi(config: ReplicateConfig) {
 
     suspend fun streamWithDeployment(deploymentOwner: String, deploymentName: String, requestBody: Map<String, Any>) =
         callbackFlow {
-            val predictionResponse = service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
+            val predictionResponse =
+                service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
             this.produceResponse(predictionResponse, deploymentName)
         }
 
-    private suspend fun ProducerScope<String>.produceResponse(predictionResponse: Response<PredictionDTO<Any>>, entityName: String) {
+    private suspend fun ProducerScope<String>.produceResponse(
+        predictionResponse: Response<PredictionDTO<Any>>,
+        entityName: String
+    ) {
         if (!predictionResponse.isSuccessful) {
             val errorMessage = predictionResponse.errorBody()?.toModel()?.detail
                 ?: "Could not create prediction with entity name: $entityName"
@@ -104,7 +106,8 @@ class PredictionsApi(config: ReplicateConfig) {
                 .createFactory(sseClient())
                 .newEventSource(
                     request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
-                    listener = StreamingEventSourceListener { data -> this.trySend(data) }
+                    listener = StreamingEventSourceListener(onEvent = { data -> this.trySend(data) },
+                        onError = { throw Exception("on event error") })
                 )
         }
 

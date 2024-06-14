@@ -4,7 +4,7 @@ import okhttp3.Response
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 
-class StreamingEventSourceListener(val onEvent: (String) -> Unit) : EventSourceListener() {
+class StreamingEventSourceListener(val onEvent: (String) -> Unit, val onError: () -> Unit) : EventSourceListener() {
     override fun onEvent(
         eventSource: EventSource,
         id: String?,
@@ -15,7 +15,7 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit) : EventSourceL
         when (EventType.getType(type)) {
             EventType.OUTPUT -> onEvent(data)
             EventType.DONE -> {}
-            EventType.ERROR, EventType.UNKNOWN -> throw Exception("on event error")
+            EventType.ERROR, EventType.UNKNOWN -> onError()
         }
     }
 
