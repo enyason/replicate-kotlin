@@ -35,8 +35,6 @@ class PredictionsApi(config: ReplicateConfig) {
 
     private val service: PredictionsApiService by lazy { retrofit.create(PredictionsApiService::class.java) }
 
-    private val gson: Gson by lazy { GsonBuilder().create() }
-
     val pollingDelayInMillis = config.pollingDelayInMillis
 
     suspend fun <OUTPUT> createPrediction(
@@ -106,8 +104,10 @@ class PredictionsApi(config: ReplicateConfig) {
                 .createFactory(sseClient())
                 .newEventSource(
                     request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
-                    listener = StreamingEventSourceListener(onEvent = { data -> this.trySend(data) },
-                        onError = { throw Exception("on event error") })
+                    listener = StreamingEventSourceListener(
+                        onEvent = { data -> this.trySend(data) },
+                        onError = { throw Exception(it) }
+                    )
                 )
         }
 
@@ -115,6 +115,11 @@ class PredictionsApi(config: ReplicateConfig) {
     }
 
     companion object {
+        private const val SSE_CONNECT_TIMEOUT = 5L
+        private const val SSE_READ_TIMEOUT = 10L
+
+        val gson: Gson by lazy { GsonBuilder().create() }
+
         fun sseRequest(url: String): Request {
             return Request.Builder()
                 .url(url)
@@ -123,9 +128,9 @@ class PredictionsApi(config: ReplicateConfig) {
         }
 
         fun sseClient() = OkHttpClient.Builder()
-            .connectTimeout(5, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.MINUTES)
-            .writeTimeout(10, TimeUnit.MINUTES)
+            .connectTimeout(SSE_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
+            .writeTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
             .build()
     }
 }
