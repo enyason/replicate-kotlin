@@ -62,7 +62,7 @@ class PredictionsApi(config: ReplicateConfig) {
             Pair(prediction, null)
         }
 
-    private fun getResponse(responseBody: ResponseBody) = responseBody.use { body ->
+    private fun getPaginatedResponse(responseBody: ResponseBody) = responseBody.use { body ->
         val reader = body.charStream()
         val paginatedPredictionsDto = gson.fromJson(reader, PaginatedPredictionsDTO::class.java)
         val paginatedPredictions = paginatedPredictionsDto.toPaginatedPredictions()
@@ -80,10 +80,10 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun listPredictions(cursor: String): Pair<PaginatedPredictions?, Exception?> {
+    suspend fun listPredictions(cursor: String?): Pair<PaginatedPredictions?, Exception?> {
         return try {
             val responseBody = service.listPredictions(cursor)
-            getResponse(responseBody)
+            getPaginatedResponse(responseBody)
         } catch (exception: Exception) {
             Pair(null, exception)
         }

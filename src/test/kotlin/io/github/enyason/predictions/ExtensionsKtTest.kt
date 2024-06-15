@@ -2,35 +2,36 @@ package io.github.enyason.predictions
 
 import junit.framework.TestCase.assertEquals
 import kotlin.test.Test
+import kotlin.test.assertNull
 
 class ExtensionsKtTest {
 
     @Test
-    fun `getCursor on empty string returns empty string`() {
+    fun `getCursor on empty string returns null`() {
         val emptyString = ""
         val cursor = emptyString.getCursor()
-        assertEquals("", cursor)
+        assertNull(cursor)
     }
 
     @Test
-    fun `getCursor on null string returns empty string`() {
+    fun `getCursor on null string returns null`() {
         val nullString: String? = null
         val cursor = nullString.getCursor()
-        assertEquals("", cursor)
+        assertNull(cursor)
     }
 
     @Test
-    fun `getCursor on string with no query string returns empty string`() {
+    fun `getCursor on string with no query string returns null`() {
         val noQueryString = "https://api.replicate.com/v1/predictions"
         val cursor = noQueryString.getCursor()
-        assertEquals("", cursor)
+        assertNull(cursor)
     }
 
     @Test
-    fun `getCursor on string with query string but no cursor param returns empty string`() {
+    fun `getCursor on string with query string but no cursor param returns null`() {
         val noCursorParam = "https://api.replicate.com/v1/predictions?key1=value1"
         val cursor = noCursorParam.getCursor()
-        assertEquals("", cursor)
+        assertNull(cursor)
     }
 
     @Test
@@ -56,9 +57,9 @@ class ExtensionsKtTest {
     }
 
     @Test()
-    fun `getCursor on malformed URL returns empty string`() {
+    fun `getCursor on malformed URL returns null`() {
         val malformedUrl = "notAUrl"
         val cursor = malformedUrl.getCursor()
-        assertEquals("", cursor)
+        assertNull(cursor)
     }
 }

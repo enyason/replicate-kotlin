@@ -146,7 +146,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
      * data if successful.
      * - [Result.failure]: Contains an error object with an exception.
      */
-    suspend fun listPredictions(cursor: String = ""): Result<PaginatedPredictions> {
+    suspend fun listPredictions(cursor: String? = null): Result<PaginatedPredictions> {
         return try {
             val (predictions, error) = predictionAPI.listPredictions(cursor)
 

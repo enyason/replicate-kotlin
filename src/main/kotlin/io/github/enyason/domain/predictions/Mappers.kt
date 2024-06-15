@@ -5,7 +5,6 @@ import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.PredictionStatus
 import io.github.enyason.domain.predictions.models.Urls
-import io.github.enyason.predictions.getCursor
 import io.github.enyason.predictions.models.MetricsDTO
 import io.github.enyason.predictions.models.PaginatedPredictionsDTO
 import io.github.enyason.predictions.models.PredictionDTO
@@ -32,8 +31,8 @@ fun <OUTPUT> PredictionDTO<OUTPUT>.toPrediction(): Prediction<OUTPUT> {
 
 fun PaginatedPredictionsDTO.toPaginatedPredictions(): PaginatedPredictions {
     return PaginatedPredictions(
-        next = this.next.getCursor(),
-        previous = this.previous.getCursor(),
+        next = this.next,
+        previous = this.previous,
         results = this.results.map { it.toPrediction() }
     )
 }

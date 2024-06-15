@@ -15,17 +15,17 @@ package io.github.enyason.domain.predictions.models
  */
 
 data class PaginatedPredictions(
-    val next: String,
-    val previous: String,
+    val next: String?,
+    val previous: String?,
     val results: List<Prediction<Any>>
 ) {
     /**
      * @return `true` if there are more pages
      */
-    fun hasNext(): Boolean = next.isNotBlank()
+    fun hasNext(): Boolean = !next.isNullOrBlank()
 
     /**
      * @return `true` if there is/are previous pages
      */
-    fun hasPrevious(): Boolean = previous.isNotBlank()
+    fun hasPrevious(): Boolean = !previous.isNullOrBlank()
 }

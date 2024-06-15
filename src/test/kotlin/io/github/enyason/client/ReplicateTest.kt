@@ -170,7 +170,7 @@ class ReplicateTest {
     fun `When getting listPrediction fails, Then return an error result`() = runTest {
         val errorMessage = "Could not fetch prediction"
 
-        coEvery { predictionApi.listPredictions("") } returns Pair(
+        coEvery { predictionApi.listPredictions(null) } returns Pair(
             null,
             IllegalStateException(errorMessage)
         )
@@ -197,7 +197,7 @@ class ReplicateTest {
                 )
             )
         )
-        coEvery { predictionApi.listPredictions("") } returns Pair(predictions, null)
+        coEvery { predictionApi.listPredictions(null) } returns Pair(predictions, null)
 
         val result = sut.listPredictions()
 

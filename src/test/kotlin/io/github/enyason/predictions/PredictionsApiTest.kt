@@ -204,7 +204,7 @@ class PredictionsApiTest {
         )
 
         val response: Pair<PaginatedPredictions?, Exception?> =
-            sut.listPredictions("")
+            sut.listPredictions(null)
         val request = mockWebServer.takeRequest()
         val predictions = response.first
 
@@ -214,17 +214,17 @@ class PredictionsApiTest {
         assertFalse(predictions.hasPrevious())
         assertNull(response.second)
         assertEquals("GET", request.method)
-        assertEquals("/predictions?cursor=", request.path)
+        assertEquals("/predictions", request.path)
         assertTrue(request.headers["Authorization"] != null)
     }
 
     @Test
     fun `test listPredictions with cursor _API returns success with next and previous cursor response`() = runTest {
-        val nextCursor = "third_page"
-        val previousCursor = "first_page"
+        val nextCursor = "https://api.replicate.com/v1/predictions?cursor=third_page"
+        val previousCursor = "https://api.replicate.com/v1/predictions?cursor=first_page"
         val responseBody = PaginatedPredictionsDTO(
-            next = "https://api.replicate.com/v1/predictions?cursor=$nextCursor",
-            previous = "https://api.replicate.com/v1/predictions?cursor=$previousCursor",
+            next = nextCursor,
+            previous = previousCursor,
             results = listOf(
                 PredictionDTO(
                     id = id,
@@ -269,14 +269,14 @@ class PredictionsApiTest {
         )
 
         val response: Pair<PaginatedPredictions?, Exception?> =
-            sut.listPredictions("")
+            sut.listPredictions(null)
         val request = mockWebServer.takeRequest()
         val paginatedPredictions = response.first
 
         assertNull(paginatedPredictions)
         assertNotNull(response.second)
         assertEquals("GET", request.method)
-        assertEquals("/predictions?cursor=", request.path)
+        assertEquals("/predictions", request.path)
         assertTrue(request.headers["Authorization"] != null)
     }
 

@@ -32,5 +32,5 @@ interface PredictionsApiService {
     suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
 
     @GET(ENDPOINT)
-    suspend fun listPredictions(@Query("cursor") cursor: String): ResponseBody
+    suspend fun listPredictions(@Query("cursor") cursor: String?): ResponseBody
 }
