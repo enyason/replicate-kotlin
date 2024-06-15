@@ -135,12 +135,14 @@ class Replicate(val predictionAPI: PredictionsApi) {
     /**
      * Get a paginated list of predictions that you have created from the API and the website.
      * This method returns *100* records per page.
-     * @param cursor A pointer to the page of predictions you want to fetch. When left empty (""),
-     * it returns the first page. Subsequent calls can use:
-     * - the [PaginatedPredictions.next] cursor gotten from the previous response to retrieve
-     *   the next page of results.
-     * - the [PaginatedPredictions.previous] cursor gotten from the --- response to retrieve
-     *   the previous page of results.
+     * @param cursor A pointer to the page of predictions you want to fetch. When null it returns
+     * the first page. Subsequent calls can use:
+     * - the [PaginatedPredictions.next] url gotten from the response to retrieve
+     *   the next page of results. You can use the helper extension [getCursor] on this url,
+     *   to extract the cursor id.
+     * - the [PaginatedPredictions.previous] url gotten from the response to retrieve
+     *   the previous page of results. You can use the helper extension [getCursor] on this url,
+     *   to extract the cursor id.
      * @return A [Result] object:
      * - [Result.success]: Contains a [PaginatedPredictions] object with the retrieved predictions
      * data if successful.
