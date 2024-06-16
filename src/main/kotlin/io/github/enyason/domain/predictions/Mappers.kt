@@ -23,7 +23,7 @@ fun <OUTPUT> PredictionDTO<OUTPUT>.toPrediction(): Prediction<OUTPUT> {
         startedAt = this.startedAt,
         completedAt = this.completedAt,
         metrics = this.metrics.toMetrics(),
-        urls = this.urls.toUrls()
+        urls = this.urls.toUrls(),
     )
 }
 
@@ -31,7 +31,7 @@ fun MetricsDTO?.toMetrics(): Metrics? {
     return this?.let {
         Metrics(
             predictTime = it.predictTime,
-            totalTime = it.totalTime
+            totalTime = it.totalTime,
         )
     }
 }
@@ -41,7 +41,7 @@ fun UrlsDTO?.toUrls(): Urls? {
         Urls(
             cancel = it.cancel,
             get = it.get,
-            stream = it.stream
+            stream = it.stream,
         )
     }
 }

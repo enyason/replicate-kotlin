@@ -15,18 +15,23 @@ import retrofit2.http.Path
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  */
 interface PredictionsApiService {
-
     companion object {
         const val ENDPOINT = "predictions"
     }
 
     @POST(ENDPOINT)
     @JvmSuppressWildcards
-    suspend fun createPrediction(@Body predictionRequest: Map<String, Any>): ResponseBody
+    suspend fun createPrediction(
+        @Body predictionRequest: Map<String, Any>,
+    ): ResponseBody
 
     @GET("$ENDPOINT/{predictionId}")
-    suspend fun getPrediction(@Path("predictionId") predictionId: String): ResponseBody
+    suspend fun getPrediction(
+        @Path("predictionId") predictionId: String,
+    ): ResponseBody
 
     @POST("$ENDPOINT/{predictionId}/cancel")
-    suspend fun cancelPrediction(@Path("predictionId") predictionId: String): Response<Unit>
+    suspend fun cancelPrediction(
+        @Path("predictionId") predictionId: String,
+    ): Response<Unit>
 }
