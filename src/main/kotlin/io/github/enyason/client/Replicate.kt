@@ -138,7 +138,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
      * @param cursor A pointer to the page of predictions you want to fetch. When null it returns
      * the first page. Subsequent calls can use:
      * - the [PaginatedPredictions.next] url gotten from the response to retrieve
-     *   the next page of results. You can use the helper extension [getCursor] on this url,
+     *   the next page of results. You can use the helper extension [io.github.enyason.predictions.getCursor] on this url,
      *   to extract the cursor id.
      * - the [PaginatedPredictions.previous] url gotten from the response to retrieve
      *   the previous page of results. You can use the helper extension [getCursor] on this url,
