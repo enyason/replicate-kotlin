@@ -19,7 +19,6 @@ import java.lang.reflect.Type
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  */
 class PredictionsApi(config: ReplicateConfig) {
-
     constructor(apiToken: String) : this(ReplicateConfig(apiToken = apiToken))
 
     private val retrofit by lazy { RetrofitFactory.buildRetrofit(config) }
@@ -30,7 +29,10 @@ class PredictionsApi(config: ReplicateConfig) {
 
     val pollingDelayInMillis = config.pollingDelayInMillis
 
-    suspend fun <OUTPUT> createPrediction(requestBody: Map<String, Any>, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
+    suspend fun <OUTPUT> createPrediction(
+        requestBody: Map<String, Any>,
+        type: Type,
+    ): Pair<Prediction<OUTPUT>?, Exception?> {
         return try {
             val responseBody = service.createPrediction(requestBody)
             getResponse(responseBody, type)
@@ -39,7 +41,10 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun <OUTPUT> getPrediction(predictionId: String, type: Type): Pair<Prediction<OUTPUT>?, Exception?> {
+    suspend fun <OUTPUT> getPrediction(
+        predictionId: String,
+        type: Type,
+    ): Pair<Prediction<OUTPUT>?, Exception?> {
         return try {
             val responseBody = service.getPrediction(predictionId)
             getResponse(responseBody, type)
@@ -48,7 +53,10 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    private fun <OUTPUT> getResponse(responseBody: ResponseBody, type: Type) = responseBody.use { body ->
+    private fun <OUTPUT> getResponse(
+        responseBody: ResponseBody,
+        type: Type,
+    ) = responseBody.use { body ->
         val reader = body.charStream()
         val predictionDto = gson.fromJson<PredictionDTO<OUTPUT>>(reader, type)
         val prediction = predictionDto.toPrediction()

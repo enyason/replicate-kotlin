@@ -13,7 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
 internal object RetrofitFactory {
-
     private var retrofit: Retrofit? = null
 
     /**
@@ -21,9 +20,7 @@ internal object RetrofitFactory {
      * The new [Retrofit] instance is built using configurations specified in [ReplicateConfig]
      * @param config A set of configurations used to control the way the SDK behaves
      */
-    fun buildRetrofit(
-        config: ReplicateConfig
-    ): Retrofit {
+    fun buildRetrofit(config: ReplicateConfig): Retrofit {
         val retrofit = this.retrofit
         if (retrofit != null) {
             return retrofit
@@ -38,23 +35,24 @@ internal object RetrofitFactory {
             }
     }
 
-    private fun buildHttpClient(
-        config: ReplicateConfig
-    ) = OkHttpClient.Builder()
-        .addInterceptor { chain ->
-            val request = chain.request().newBuilder()
-                .addHeader("Authorization", "Bearer ${config.apiToken}")
-                .build()
-            chain.proceed(request)
-        }.also {
-            if (config.enableLogging) it.addInterceptor(HttpLoggingInterceptor().setLevel(config.loggingLevel))
-        }.build()
+    private fun buildHttpClient(config: ReplicateConfig) =
+        OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val request =
+                    chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer ${config.apiToken}")
+                        .build()
+                chain.proceed(request)
+            }.also {
+                if (config.enableLogging) it.addInterceptor(HttpLoggingInterceptor().setLevel(config.loggingLevel))
+            }.build()
 
-    private fun createConverterFactory() = GsonConverterFactory.create(
-        GsonBuilder()
-            .setLenient()
-            .create()
-    )
+    private fun createConverterFactory() =
+        GsonConverterFactory.create(
+            GsonBuilder()
+                .setLenient()
+                .create(),
+        )
 
     @TestOnly
     internal fun reset() {

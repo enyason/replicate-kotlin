@@ -31,7 +31,6 @@ import io.github.enyason.predictions.predictable.validateId
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
 class Replicate(val predictionAPI: PredictionsApi) {
-
     /**
      * Creates a new prediction for a specific model version.
      * This method takes a [Predictable] object that encapsulates the inputs for the model.
@@ -45,10 +44,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
     suspend inline fun <reified OUTPUT> createPrediction(predictable: Predictable): Task<Prediction<OUTPUT>> {
         return try {
             predictable.validate()
-            val request = mapOf(
-                "version" to predictable.versionId,
-                "input" to predictable.input
-            )
+            val request =
+                mapOf(
+                    "version" to predictable.versionId,
+                    "input" to predictable.input,
+                )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
             val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(request, predictionDtoObjectType)
@@ -59,7 +59,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI),
                     )
                 }
 
@@ -92,7 +92,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy<OUTPUT>(predictionAPI)
+                        PredictionPollingStrategy<OUTPUT>(predictionAPI),
                     )
                 }
 
@@ -129,7 +129,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
     }
 
     companion object {
-
         /**
          * create a replicate client using authorization code
          * @param token API token from [Replicate](https://replicate.com) API
