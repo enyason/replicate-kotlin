@@ -17,15 +17,15 @@ import kotlinx.coroutines.flow.Flow
  * A client class to interact with the [Replicate](https://replicate.com) API.
  * This class provides methods for creating, retrieving, and canceling predictions.
  *
- *<p>Here is an example on how to get an intance of the class ,
- *<pre>
+ * Here is an example of how to get an instance of the class:
+ *```
  *
  * val client = Replicate.client("token")
  *
  * or
  *
  * val client = Replicate.client(ReplicateConfig("token"))
- *</pre>
+ *```
  *
  * @author Emmanuel Enya <a href="https://github.com/enyason">link</a>
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
