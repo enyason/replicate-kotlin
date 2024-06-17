@@ -10,7 +10,6 @@ import io.github.enyason.client.Task
  * @see [Task]
  */
 interface PollingStrategy<RESULT> {
-
     /**
      * Polls for the status and result of a task.
      * This method is expected to be implemented by concrete strategies to retrieve task updates
@@ -21,5 +20,8 @@ interface PollingStrategy<RESULT> {
      * @param extraArgs optional arguments that might be specific to the polling strategy implementation
      * @return an updated `Task` object reflecting the final state of the task after polling
      */
-    suspend fun pollTask(taskId: String, extraArgs: Map<String, Any>?): Task<RESULT>
+    suspend fun pollTask(
+        taskId: String,
+        extraArgs: Map<String, Any>?,
+    ): Task<RESULT>
 }

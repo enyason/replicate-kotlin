@@ -11,7 +11,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class RetrofitFactoryTest {
-
     @AfterTest
     fun tearDown() {
         RetrofitFactory.reset()

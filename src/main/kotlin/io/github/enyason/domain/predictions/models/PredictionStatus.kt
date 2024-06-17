@@ -6,7 +6,8 @@ enum class PredictionStatus {
     SUCCEEDED,
     FAILED,
     CANCELED,
-    UNKNOWN;
+    UNKNOWN,
+    ;
 
     companion object {
         fun getStatus(status: String?): PredictionStatus {
