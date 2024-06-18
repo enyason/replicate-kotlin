@@ -19,5 +19,5 @@ data class PredictionDTO<OUTPUT>(
     @SerializedName("completed_at")
     var completedAt: String? = null,
     var metrics: MetricsDTO? = null,
-    var urls: UrlsDTO? = null
+    var urls: UrlsDTO? = null,
 )

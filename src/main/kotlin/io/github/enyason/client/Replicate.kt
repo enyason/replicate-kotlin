@@ -32,7 +32,6 @@ import kotlinx.coroutines.flow.Flow
  * @author Joseph Olugbohunmi <a href="https://github.com/mayorJAY">link</a>
  */
 class Replicate(val predictionAPI: PredictionsApi) {
-
     /**
      * Creates a new Prediction for a specific model version.
      * This method takes a [Predictable] object that encapsulates the inputs for the model.
@@ -163,7 +162,6 @@ class Replicate(val predictionAPI: PredictionsApi) {
     }
 
     companion object {
-
         /**
          * create a replicate client using authorization code
          * @param token API token from [Replicate](https://replicate.com) API
