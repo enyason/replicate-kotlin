@@ -81,26 +81,33 @@ class PredictionsApi(config: ReplicateConfig) {
         }
     }
 
-    suspend fun streamWithModel(modelOwner: String, modelName: String, requestBody: Map<String, Any>) =
-        callbackFlow {
-            val predictionResponse = service.createPredictionWithModel(modelOwner, modelName, requestBody)
-            this.produceResponse(predictionResponse, modelName)
-        }
+    suspend fun streamWithModel(
+        modelOwner: String,
+        modelName: String,
+        requestBody: Map<String, Any>,
+    ) = callbackFlow {
+        val predictionResponse = service.createPredictionWithModel(modelOwner, modelName, requestBody)
+        this.produceResponse(predictionResponse, modelName)
+    }
 
-    suspend fun streamWithDeployment(deploymentOwner: String, deploymentName: String, requestBody: Map<String, Any>) =
-        callbackFlow {
-            val predictionResponse =
-                service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
-            this.produceResponse(predictionResponse, deploymentName)
-        }
+    suspend fun streamWithDeployment(
+        deploymentOwner: String,
+        deploymentName: String,
+        requestBody: Map<String, Any>,
+    ) = callbackFlow {
+        val predictionResponse =
+            service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
+        this.produceResponse(predictionResponse, deploymentName)
+    }
 
     private suspend fun ProducerScope<String>.produceResponse(
         predictionResponse: Response<PredictionDTO<Any>>,
-        entityName: String
+        entityName: String,
     ) {
         if (!predictionResponse.isSuccessful) {
-            val errorMessage = predictionResponse.errorBody()?.toModel()?.detail
-                ?: "Could not create prediction with entity name: $entityName"
+            val errorMessage =
+                predictionResponse.errorBody()?.toModel()?.detail
+                    ?: "Could not create prediction with entity name: $entityName"
             throw Exception(errorMessage)
         }
 
@@ -109,10 +116,11 @@ class PredictionsApi(config: ReplicateConfig) {
                 .createFactory(sseClient())
                 .newEventSource(
                     request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
-                    listener = StreamingEventSourceListener(
-                        onEvent = { data -> this.trySend(data) },
-                        onError = { throw Exception(it) }
-                    )
+                    listener =
+                        StreamingEventSourceListener(
+                            onEvent = { data -> this.trySend(data) },
+                            onError = { throw Exception(it) },
+                        ),
                 )
         }
 
@@ -132,10 +140,11 @@ class PredictionsApi(config: ReplicateConfig) {
                 .build()
         }
 
-        fun sseClient() = OkHttpClient.Builder()
-            .connectTimeout(SSE_CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
-            .writeTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
-            .build()
+        fun sseClient() =
+            OkHttpClient.Builder()
+                .connectTimeout(SSE_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
+                .writeTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
+                .build()
     }
 }

@@ -14,18 +14,21 @@ import okhttp3.sse.EventSources
  *
  * @return a [Flow] of Strings representing the output produced as server-sent events (SSE).
  */
-fun Prediction<Any>.stream() = callbackFlow {
-    EventSources
-        .createFactory(PredictionsApi.sseClient())
-        .newEventSource(
-            request = PredictionsApi.sseRequest(
-                urls?.stream ?: throw Exception("Stream URL is null.")
-            ),
-            listener = StreamingEventSourceListener(
-                onEvent = { data -> trySend(data) },
-                onError = { error(it) }
+fun Prediction<Any>.stream() =
+    callbackFlow {
+        EventSources
+            .createFactory(PredictionsApi.sseClient())
+            .newEventSource(
+                request =
+                    PredictionsApi.sseRequest(
+                        urls?.stream ?: throw Exception("Stream URL is null."),
+                    ),
+                listener =
+                    StreamingEventSourceListener(
+                        onEvent = { data -> trySend(data) },
+                        onError = { error(it) },
+                    ),
             )
-        )
 
-    awaitClose()
-}
+        awaitClose()
+    }

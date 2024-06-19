@@ -47,15 +47,16 @@ class Replicate(val predictionAPI: PredictionsApi) {
      */
     suspend inline fun <reified OUTPUT> createPrediction(
         predictable: Predictable,
-        stream: Boolean = false
+        stream: Boolean = false,
     ): Task<Prediction<OUTPUT>> {
         return try {
             predictable.validate()
-            val request = mapOf(
-                "version" to predictable.versionId,
-                "input" to predictable.input,
-                "stream" to stream
-            )
+            val request =
+                mapOf(
+                    "version" to predictable.versionId,
+                    "input" to predictable.input,
+                    "stream" to stream,
+                )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
             val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(request, predictionDtoObjectType)
@@ -66,7 +67,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy(predictionAPI),
                     )
                 }
 
@@ -99,7 +100,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy(predictionAPI)
+                        PredictionPollingStrategy(predictionAPI),
                     )
                 }
 
@@ -143,7 +144,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
      * @param input the input for the model
      * @return a [Flow] of Strings representing the output produced as server-sent events (SSE).
      */
-    suspend fun streamWithModel(modelOwner: String, modelName: String, input: Map<String, Any>): Flow<String> {
+    suspend fun streamWithModel(
+        modelOwner: String,
+        modelName: String,
+        input: Map<String, Any>,
+    ): Flow<String> {
         val requestBody = mapOf("input" to input, "stream" to true)
         return predictionAPI.streamWithModel(modelOwner, modelName, requestBody)
     }
@@ -156,7 +161,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
      * @param input the input for the deployment
      * @return a [Flow] of Strings representing the output produced as server-sent events (SSE).
      */
-    suspend fun streamWithDeployment(deploymentOwner: String, deploymentName: String, input: Map<String, Any>): Flow<String> {
+    suspend fun streamWithDeployment(
+        deploymentOwner: String,
+        deploymentName: String,
+        input: Map<String, Any>,
+    ): Flow<String> {
         val requestBody = mapOf("input" to input, "stream" to true)
         return predictionAPI.streamWithDeployment(deploymentOwner, deploymentName, requestBody)
     }

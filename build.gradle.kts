@@ -23,6 +23,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+    testImplementation("app.cash.turbine:turbine:1.1.0")
 }
 
 tasks.test {

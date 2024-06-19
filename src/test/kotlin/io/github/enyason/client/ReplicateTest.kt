@@ -1,14 +1,18 @@
 package io.github.enyason.client
 
+import app.cash.turbine.test
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.predictable.Predictable
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
@@ -166,5 +170,139 @@ class ReplicateTest {
             assertNotNull(result.exceptionOrNull())
             assertEquals(errorMessage, result.exceptionOrNull()?.message)
             assertNull(result.getOrNull())
+        }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming, Then verify the request contains a stream property`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+
+            coEvery { predictionApi.streamWithModel(any(), any(), any()) } returns mockk()
+
+            sut.streamWithModel(modelOwner, modelName, input)
+
+            val requestSlot = slot<Map<String, Any>>()
+
+            coVerify {
+                predictionApi.streamWithModel(modelOwner, modelName, capture(requestSlot))
+            }
+
+            assertTrue(requestSlot.captured["stream"] == true)
+        }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming, Then return a flow of string`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+
+            val dummyGeneratedOutput =
+                "Alan Turing is a British mathematician, computer scientist, and logician who cracked the " +
+                    "Enigma code and pioneered artificial intelligence."
+
+            val outputChunk = dummyGeneratedOutput.split(" ")
+
+            coEvery { predictionApi.streamWithModel(any(), any(), any()) } returns
+                flow {
+                    outputChunk.forEach {
+                        emit(it)
+                    }
+                }
+
+            sut.streamWithModel(modelOwner, modelName, input).test {
+                outputChunk.forEach {
+                    assertEquals(it, awaitItem())
+                }
+                awaitComplete()
+            }
+        }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming fails, Then throw an exception`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+            val errorMessage = "failed to stream output"
+
+            coEvery {
+                predictionApi.streamWithModel(
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns flow { throw IllegalStateException(errorMessage) }
+
+            sut.streamWithModel(modelOwner, modelName, input).test {
+                assertEquals(errorMessage, awaitError().message)
+            }
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming, Then verify the request contains a stream property`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+
+            coEvery { predictionApi.streamWithDeployment(any(), any(), any()) } returns mockk()
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input)
+
+            val requestSlot = slot<Map<String, Any>>()
+
+            coVerify {
+                predictionApi.streamWithDeployment(deploymentOwner, deploymentName, capture(requestSlot))
+            }
+
+            assertTrue(requestSlot.captured["stream"] == true)
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming, Then return a flow of string`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+
+            val dummyGeneratedOutput =
+                "Alan Turing is a British mathematician, computer scientist, and logician who " +
+                    "cracked the Enigma code and pioneered artificial intelligence."
+
+            val outputChunk = dummyGeneratedOutput.split(" ")
+
+            coEvery { predictionApi.streamWithDeployment(any(), any(), any()) } returns
+                flow {
+                    outputChunk.forEach {
+                        emit(it)
+                    }
+                }
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input).test {
+                outputChunk.forEach {
+                    assertEquals(it, awaitItem())
+                }
+                awaitComplete()
+            }
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming fails, Then throw an exception`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+            val errorMessage = "failed to stream output"
+
+            coEvery {
+                predictionApi.streamWithDeployment(any(), any(), any())
+            } returns flow { throw IllegalStateException(errorMessage) }
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input).test {
+                assertEquals(errorMessage, awaitError().message)
+            }
         }
 }

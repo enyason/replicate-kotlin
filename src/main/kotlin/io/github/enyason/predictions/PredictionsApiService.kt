@@ -41,7 +41,7 @@ interface PredictionsApiService {
     suspend fun createPredictionWithModel(
         @Path("modelOwner") modelOwner: String,
         @Path("modelName") modelName: String,
-        @Body predictionRequest: Map<String, Any>
+        @Body predictionRequest: Map<String, Any>,
     ): Response<PredictionDTO<Any>>
 
     @POST("deployments/{deploymentOwner}/{deploymentName}/predictions")
@@ -49,6 +49,6 @@ interface PredictionsApiService {
     suspend fun createPredictionWithDeployment(
         @Path("deploymentOwner") deploymentOwner: String,
         @Path("deploymentName") deploymentName: String,
-        @Body predictionRequest: Map<String, Any>
+        @Body predictionRequest: Map<String, Any>,
     ): Response<PredictionDTO<Any>>
 }

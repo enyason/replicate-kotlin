@@ -10,7 +10,7 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit, val onError: (
         eventSource: EventSource,
         id: String?,
         type: String?,
-        data: String
+        data: String,
     ) {
         super.onEvent(eventSource, id, type, data)
         when (EventType.getType(type)) {
@@ -21,12 +21,19 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit, val onError: (
         }
     }
 
-    override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
+    override fun onFailure(
+        eventSource: EventSource,
+        t: Throwable?,
+        response: Response?,
+    ) {
         super.onFailure(eventSource, t, response)
         t?.run { throw this }
     }
 
-    private fun onDone(data: String, onEvent: (String) -> Unit) {
+    private fun onDone(
+        data: String,
+        onEvent: (String) -> Unit,
+    ) {
         if (data.isEmptyJson()) {
             return
         }
@@ -38,7 +45,10 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit, val onError: (
         onEvent(done.reason)
     }
 
-    private fun onError(data: String, onError: (String) -> Unit) {
+    private fun onError(
+        data: String,
+        onError: (String) -> Unit,
+    ) {
         val error = PredictionsApi.gson.fromJson(data, Error::class.java)
         onError(error.detail)
     }
@@ -48,7 +58,11 @@ class StreamingEventSourceListener(val onEvent: (String) -> Unit, val onError: (
     private fun String.isError() = equals("error", true)
 
     enum class EventType {
-        OUTPUT, DONE, ERROR, UNKNOWN;
+        OUTPUT,
+        DONE,
+        ERROR,
+        UNKNOWN,
+        ;
 
         companion object {
             fun getType(type: String?): EventType {
