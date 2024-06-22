@@ -33,7 +33,7 @@ fun PaginatedPredictionsDTO.toPaginatedPredictions(): PaginatedPredictions {
     return PaginatedPredictions(
         next = this.next,
         previous = this.previous,
-        results = this.results.map { it.toPrediction() }
+        results = this.results.map { it.toPrediction() },
     )
 }
 

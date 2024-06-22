@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  */
 class PredictionsApi(config: ReplicateConfig) {
-
     constructor(apiToken: String) : this(ReplicateConfig(apiToken = apiToken))
 
     private val retrofit by lazy { RetrofitFactory.buildRetrofit(config) }
@@ -74,12 +73,13 @@ class PredictionsApi(config: ReplicateConfig) {
         Pair(prediction, null)
     }
 
-    private fun getPaginatedResponse(responseBody: ResponseBody) = responseBody.use { body ->
-        val reader = body.charStream()
-        val paginatedPredictionsDto = gson.fromJson(reader, PaginatedPredictionsDTO::class.java)
-        val paginatedPredictions = paginatedPredictionsDto.toPaginatedPredictions()
-        Pair(paginatedPredictions, null)
-    }
+    private fun getPaginatedResponse(responseBody: ResponseBody) =
+        responseBody.use { body ->
+            val reader = body.charStream()
+            val paginatedPredictionsDto = gson.fromJson(reader, PaginatedPredictionsDTO::class.java)
+            val paginatedPredictions = paginatedPredictionsDto.toPaginatedPredictions()
+            Pair(paginatedPredictions, null)
+        }
 
     suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
         val response = service.cancelPrediction(predictionId)
@@ -137,7 +137,6 @@ class PredictionsApi(config: ReplicateConfig) {
 
         awaitClose()
     }
-
 
     suspend fun listPredictions(cursor: String?): Pair<PaginatedPredictions?, Exception?> {
         return try {

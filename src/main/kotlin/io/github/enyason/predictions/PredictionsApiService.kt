@@ -17,7 +17,6 @@ import retrofit2.http.Query
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
  */
 interface PredictionsApiService {
-
     companion object {
         const val ENDPOINT = "predictions"
     }
@@ -55,5 +54,7 @@ interface PredictionsApiService {
     ): Response<PredictionDTO<Any>>
 
     @GET(ENDPOINT)
-    suspend fun listPredictions(@Query("cursor") cursor: String?): ResponseBody
+    suspend fun listPredictions(
+        @Query("cursor") cursor: String?,
+    ): ResponseBody
 }

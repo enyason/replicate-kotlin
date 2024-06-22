@@ -61,10 +61,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
                 )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
-            val (prediction, error) = predictionAPI.createPrediction<OUTPUT>(
-                request,
-                predictionDtoObjectType
-            )
+            val (prediction, error) =
+                predictionAPI.createPrediction<OUTPUT>(
+                    request,
+                    predictionDtoObjectType,
+                )
 
             when {
                 prediction != null -> {
@@ -97,10 +98,11 @@ class Replicate(val predictionAPI: PredictionsApi) {
         return try {
             predictionId.validateId()
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
-            val (prediction, error) = predictionAPI.getPrediction<OUTPUT>(
-                predictionId,
-                predictionDtoObjectType
-            )
+            val (prediction, error) =
+                predictionAPI.getPrediction<OUTPUT>(
+                    predictionId,
+                    predictionDtoObjectType,
+                )
 
             when {
                 prediction != null -> {

@@ -5,7 +5,6 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 
 class ExtensionsKtTest {
-
     @Test
     fun `getCursor on empty string returns null`() {
         val emptyString = ""

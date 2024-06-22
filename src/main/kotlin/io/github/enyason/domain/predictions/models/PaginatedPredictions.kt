@@ -17,7 +17,7 @@ package io.github.enyason.domain.predictions.models
 data class PaginatedPredictions(
     val next: String?,
     val previous: String?,
-    val results: List<Prediction<Any>>
+    val results: List<Prediction<Any>>,
 ) {
     /**
      * @return `true` if there are more pages
