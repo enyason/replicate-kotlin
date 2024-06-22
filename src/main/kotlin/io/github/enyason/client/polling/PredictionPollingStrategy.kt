@@ -25,14 +25,12 @@ class PredictionPollingStrategy<OUTPUT>(
      * The [PredictionsApi] used to interact with the prediction service and retrieve updates.
      */
     private val predictionsApi: PredictionsApi,
-
     /**
      * The delay (in milliseconds) between polling attempts for prediction status updates.
      * Defaults to the value retrieved from [PredictionsApi.pollingDelayInMillis].
      */
-    private val pollingDelayInMillis: Long = predictionsApi.pollingDelayInMillis
+    private val pollingDelayInMillis: Long = predictionsApi.pollingDelayInMillis,
 ) : PollingStrategy<Prediction<OUTPUT>> {
-
     /**
      * Polls for the status and result of a prediction task.
      * This method repeatedly retrieves the prediction information using the provided `taskId`
@@ -42,7 +40,10 @@ class PredictionPollingStrategy<OUTPUT>(
      * @param extraArgs optional arguments that might be used during polling (e.g., specifying prediction output type)
      * @return an updated `Task` object reflecting the final state of the prediction after polling
      */
-    override suspend fun pollTask(taskId: String, extraArgs: Map<String, Any>?): Task<Prediction<OUTPUT>> {
+    override suspend fun pollTask(
+        taskId: String,
+        extraArgs: Map<String, Any>?,
+    ): Task<Prediction<OUTPUT>> {
         val type: Type = extraArgs?.get(PREDICTION_OUTPUT_TYPE_ARG) as Type
         var status: PredictionStatus = PredictionStatus.STARTING
         var polledPrediction: Prediction<OUTPUT>? = null
@@ -71,7 +72,7 @@ class PredictionPollingStrategy<OUTPUT>(
                 exception = exception,
                 isComplete = polledPrediction?.isCompleted() ?: false,
                 isCanceled = polledPrediction?.isCanceled() ?: false,
-                pollingStrategy = this
+                pollingStrategy = this,
             )
         } catch (error: Exception) {
             return Task.error(error)

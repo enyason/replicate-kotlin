@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm") version "1.9.23"
-    id("org.jlleitschuh.gradle.ktlint") version "11.3.1"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
 group = "io.github.enyason"
@@ -14,6 +14,7 @@ dependencies {
     // Retrofit and OkHttp3
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.okhttp3:okhttp-sse:4.9.3")
 
     // Kotlin coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
@@ -22,6 +23,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("io.mockk:mockk:1.13.10")
     testImplementation("com.squareup.okhttp3:mockwebserver:4.10.0")
+    testImplementation("app.cash.turbine:turbine:1.1.0")
 }
 
 tasks.test {

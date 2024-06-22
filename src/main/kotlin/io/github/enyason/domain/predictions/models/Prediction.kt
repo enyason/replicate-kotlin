@@ -20,7 +20,7 @@ data class Prediction<OUTPUT>(
     var startedAt: String? = null,
     var completedAt: String? = null,
     var metrics: Metrics? = null,
-    var urls: Urls? = null
+    var urls: Urls? = null,
 )
 
 fun <OUTPUT> Prediction<OUTPUT>.isCompleted(): Boolean {

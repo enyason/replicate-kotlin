@@ -25,11 +25,12 @@ suspend inline fun <reified OUTPUT> Task<Prediction<OUTPUT>>.await(): Prediction
     val predictionId = result?.id.orEmpty()
 
     val type = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
-    val task = pollingStrategy?.pollTask(
-        predictionId,
-        mapOf(
-            PREDICTION_OUTPUT_TYPE_ARG to type
+    val task =
+        pollingStrategy?.pollTask(
+            predictionId,
+            mapOf(
+                PREDICTION_OUTPUT_TYPE_ARG to type,
+            ),
         )
-    )
     return task?.result
 }

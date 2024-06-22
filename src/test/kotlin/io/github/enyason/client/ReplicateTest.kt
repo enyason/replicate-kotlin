@@ -1,15 +1,19 @@
 package io.github.enyason.client
 
+import app.cash.turbine.test
 import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.predictable.Predictable
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.unmockkAll
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import kotlin.test.AfterTest
@@ -20,7 +24,7 @@ import kotlin.test.assertTrue
 data class TestPredictable(
     override val modelId: String? = null,
     override val versionId: String,
-    override val input: Map<String, Any>
+    override val input: Map<String, Any>,
 ) : Predictable
 
 class ReplicateTest {
@@ -40,52 +44,55 @@ class ReplicateTest {
     }
 
     @Test
-    fun `Given invalid arguments, When creating a prediction, Then throw an exception`() = runTest {
-        val predictable = TestPredictable(versionId = "", input = emptyMap())
-        val result = sut.createPrediction<Any>(predictable)
-        assertTrue { result.exception is IllegalArgumentException }
-    }
+    fun `Given invalid arguments, When creating a prediction, Then throw an exception`() =
+        runTest {
+            val predictable = TestPredictable(versionId = "", input = emptyMap())
+            val result = sut.createPrediction<Any>(predictable)
+            assertTrue { result.exception is IllegalArgumentException }
+        }
 
     @Test
-    fun `When creating a prediction fails, Then return an error result`() = runTest {
-        val predictable =
-            TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
-        val errorMessage = "Could not create a prediction, try again"
-        coEvery { predictionApi.createPrediction<Any>(any(), any()) } returns Pair(
-            null,
-            IllegalStateException(errorMessage)
-        )
+    fun `When creating a prediction fails, Then return an error result`() =
+        runTest {
+            val predictable =
+                TestPredictable(versionId = "2exbc4", input = mapOf("prompt" to "hd image of Einstein"))
+            val errorMessage = "Could not create a prediction, try again"
+            coEvery { predictionApi.createPrediction<Any>(any(), any()) } returns
+                Pair(
+                    null,
+                    IllegalStateException(errorMessage),
+                )
 
-        val task = sut.createPrediction<Any>(predictable)
+            val task = sut.createPrediction<Any>(predictable)
 
-        assertTrue { task.result == null }
-        assertTrue { task.exception?.message == errorMessage }
-    }
+            assertTrue { task.result == null }
+            assertTrue { task.exception?.message == errorMessage }
+        }
 
     @Test
-    fun `When creating a prediction succeeds, Then return an success result`() = runTest {
-        val predictable = TestPredictable(
-            versionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
-            input = mapOf("prompt" to "hd image of Einstein")
-        )
+    fun `When creating a prediction succeeds, Then return an success result`() =
+        runTest {
+            val predictable =
+                TestPredictable(
+                    versionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
+                    input = mapOf("prompt" to "hd image of Einstein"),
+                )
 
-        val predictionOutputUrl =
-            "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
+            val predictionOutputUrl =
+                "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
 
-        val prediction = Prediction(
-            id = "random-id",
-            output = listOf(predictionOutputUrl)
-        )
-        coEvery { predictionApi.createPrediction<List<String>>(any(), any()) } returns Pair(
-            prediction,
-            null
-        )
-        every { predictionApi.pollingDelayInMillis } returns 2000L
+            val prediction =
+                Prediction(
+                    id = "random-id",
+                    output = listOf(predictionOutputUrl),
+                )
+            coEvery { predictionApi.createPrediction<List<String>>(any(), any()) } returns Pair(prediction, null)
+            every { predictionApi.pollingDelayInMillis } returns 2000L
 
-        val task = sut.createPrediction<List<String>>(predictable)
+            val task = sut.createPrediction<List<String>>(predictable)
 
-        assertTrue { task.result == prediction }
-    }
+            assertTrue { task.result == prediction }
+        }
 
     @Test
     fun `Given empty prediction Id, When getting a prediction, Then throw an exception`() =
@@ -95,76 +102,77 @@ class ReplicateTest {
         }
 
     @Test
-    fun `When getting a prediction fails, Then return an error result`() = runTest {
-        val predictionId = "sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYI"
-        val errorMessage = "Could not fetch prediction"
+    fun `When getting a prediction fails, Then return an error result`() =
+        runTest {
+            val predictionId = "sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYI"
+            val errorMessage = "Could not fetch prediction"
 
-        coEvery { predictionApi.getPrediction<Any>(predictionId, any()) } returns Pair(
-            null,
-            IllegalStateException(errorMessage)
-        )
-        val task = sut.getPrediction<Any>(predictionId)
+            coEvery { predictionApi.getPrediction<Any>(predictionId, any()) } returns
+                Pair(
+                    null,
+                    IllegalStateException(errorMessage),
+                )
+            val task = sut.getPrediction<Any>(predictionId)
 
-        assertTrue { task.result == null }
-        assertTrue { task.exception?.message == errorMessage }
-    }
-
-    @Test
-    fun `When getting a prediction succeeds, Then return an success result`() = runTest {
-        val predictionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
-        val predictionOutputUrl =
-            "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
-
-        val prediction = Prediction(
-            id = predictionId,
-            output = listOf<Any>(predictionOutputUrl)
-        )
-        coEvery { predictionApi.getPrediction<List<Any>>(predictionId, any()) } returns Pair(
-            prediction,
-            null
-        )
-        every { predictionApi.pollingDelayInMillis } returns 2000L
-
-        val task = sut.getPrediction<Any>(predictionId)
-
-        assertTrue { task.result == prediction }
-    }
+            assertTrue { task.result == null }
+            assertTrue { task.exception?.message == errorMessage }
+        }
 
     @Test
-    fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() = runTest {
-        val result = sut.cancelPrediction("")
-        assertTrue(result.exceptionOrNull() is IllegalArgumentException)
-        assertTrue(result.isFailure)
-        assertEquals("Provided an empty prediction ID", result.exceptionOrNull()?.message)
-    }
+    fun `When getting a prediction succeeds, Then return an success result`() =
+        runTest {
+            val predictionId = "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4"
+            val predictionOutputUrl =
+                "https://replicate.delivery/pbxt/sWeZFZou6v3CPKuoJbqX46ugPaHT1DcsWYx0srPmGrMOCPYIA/out-0.png"
+
+            val prediction =
+                Prediction(
+                    id = predictionId,
+                    output = listOf<Any>(predictionOutputUrl),
+                )
+            coEvery { predictionApi.getPrediction<List<Any>>(predictionId, any()) } returns Pair(prediction, null)
+            every { predictionApi.pollingDelayInMillis } returns 2000L
+
+            val task = sut.getPrediction<Any>(predictionId)
+
+            assertTrue { task.result == prediction }
+        }
 
     @Test
-    fun `test cancelPrediction _Call to API is successful _Result is success`() = runTest {
-        coEvery { predictionApi.cancelPrediction(any()) } returns Pair(true, null)
-
-        val result = sut.cancelPrediction("pId")
-
-        assertTrue(result.isSuccess)
-        assertNull(result.exceptionOrNull())
-        assertEquals(true, result.getOrNull())
-    }
+    fun `test cancelPrediction _Empty predictionId passed _Exception is thrown`() =
+        runTest {
+            val result = sut.cancelPrediction("")
+            assertTrue(result.exceptionOrNull() is IllegalArgumentException)
+            assertTrue(result.isFailure)
+            assertEquals("Provided an empty prediction ID", result.exceptionOrNull()?.message)
+        }
 
     @Test
-    fun `test cancelPrediction _Call to API fails _Result is failure`() = runTest {
-        val predictionId = "pId"
-        val errorMessage = "Could not cancel prediction with ID: $predictionId"
-        coEvery { predictionApi.cancelPrediction(any()) } returns Pair(
-            false,
-            IllegalStateException(errorMessage)
-        )
+    fun `test cancelPrediction _Call to API is successful _Result is success`() =
+        runTest {
+            coEvery { predictionApi.cancelPrediction(any()) } returns Pair(true, null)
 
-        val result = sut.cancelPrediction(predictionId)
+            val result = sut.cancelPrediction("pId")
 
-        assertTrue(result.isFailure)
-        assertNotNull(result.exceptionOrNull())
-        assertEquals(errorMessage, result.exceptionOrNull()?.message)
-        assertNull(result.getOrNull())
-    }
+            assertTrue(result.isSuccess)
+            assertNull(result.exceptionOrNull())
+            assertEquals(true, result.getOrNull())
+        }
+
+    @Test
+    fun `test cancelPrediction _Call to API fails _Result is failure`() =
+        runTest {
+            val predictionId = "pId"
+            val errorMessage = "Could not cancel prediction with ID: $predictionId"
+            coEvery { predictionApi.cancelPrediction(any()) } returns Pair(false, IllegalStateException(errorMessage))
+
+            val result = sut.cancelPrediction(predictionId)
+
+            assertTrue(result.isFailure)
+            assertNotNull(result.exceptionOrNull())
+            assertEquals(errorMessage, result.exceptionOrNull()?.message)
+            assertNull(result.getOrNull())
+        }
 
     @Test
     fun `When getting listPrediction fails, Then return an error result`() = runTest {
@@ -208,4 +216,138 @@ class ReplicateTest {
         assertEquals(previousCursor, result.getOrNull()?.previous)
         assertNull(result.exceptionOrNull())
     }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming, Then verify the request contains a stream property`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+
+            coEvery { predictionApi.streamWithModel(any(), any(), any()) } returns mockk()
+
+            sut.streamWithModel(modelOwner, modelName, input)
+
+            val requestSlot = slot<Map<String, Any>>()
+
+            coVerify {
+                predictionApi.streamWithModel(modelOwner, modelName, capture(requestSlot))
+            }
+
+            assertTrue(requestSlot.captured["stream"] == true)
+        }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming, Then return a flow of string`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+
+            val dummyGeneratedOutput =
+                "Alan Turing is a British mathematician, computer scientist, and logician who cracked the " +
+                    "Enigma code and pioneered artificial intelligence."
+
+            val outputChunk = dummyGeneratedOutput.split(" ")
+
+            coEvery { predictionApi.streamWithModel(any(), any(), any()) } returns
+                flow {
+                    outputChunk.forEach {
+                        emit(it)
+                    }
+                }
+
+            sut.streamWithModel(modelOwner, modelName, input).test {
+                outputChunk.forEach {
+                    assertEquals(it, awaitItem())
+                }
+                awaitComplete()
+            }
+        }
+
+    @Test
+    fun `Given a replicate model, When creating a prediction for streaming fails, Then throw an exception`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val modelOwner = "meta"
+            val modelName = "meta-llama-3-70b-instruct"
+            val errorMessage = "failed to stream output"
+
+            coEvery {
+                predictionApi.streamWithModel(
+                    any(),
+                    any(),
+                    any(),
+                )
+            } returns flow { throw IllegalStateException(errorMessage) }
+
+            sut.streamWithModel(modelOwner, modelName, input).test {
+                assertEquals(errorMessage, awaitError().message)
+            }
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming, Then verify the request contains a stream property`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+
+            coEvery { predictionApi.streamWithDeployment(any(), any(), any()) } returns mockk()
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input)
+
+            val requestSlot = slot<Map<String, Any>>()
+
+            coVerify {
+                predictionApi.streamWithDeployment(deploymentOwner, deploymentName, capture(requestSlot))
+            }
+
+            assertTrue(requestSlot.captured["stream"] == true)
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming, Then return a flow of string`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+
+            val dummyGeneratedOutput =
+                "Alan Turing is a British mathematician, computer scientist, and logician who " +
+                    "cracked the Enigma code and pioneered artificial intelligence."
+
+            val outputChunk = dummyGeneratedOutput.split(" ")
+
+            coEvery { predictionApi.streamWithDeployment(any(), any(), any()) } returns
+                flow {
+                    outputChunk.forEach {
+                        emit(it)
+                    }
+                }
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input).test {
+                outputChunk.forEach {
+                    assertEquals(it, awaitItem())
+                }
+                awaitComplete()
+            }
+        }
+
+    @Test
+    fun `Given a deployment, When creating a prediction for streaming fails, Then throw an exception`() =
+        runTest {
+            val input = mapOf("prompt" to "what is...?")
+            val deploymentOwner = "owner"
+            val deploymentName = "name"
+            val errorMessage = "failed to stream output"
+
+            coEvery {
+                predictionApi.streamWithDeployment(any(), any(), any())
+            } returns flow { throw IllegalStateException(errorMessage) }
+
+            sut.streamWithDeployment(deploymentOwner, deploymentName, input).test {
+                assertEquals(errorMessage, awaitError().message)
+            }
+        }
 }

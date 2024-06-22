@@ -37,12 +37,7 @@ class PredictionsApiTest {
     fun setup() {
         mockWebServer = MockWebServer()
         mockWebServer.start(8080)
-        sut = PredictionsApi(
-            ReplicateConfig(
-                "tokenYUIOPJHIGUFYDRT",
-                baseUrl = mockWebServer.url(path = "").toString()
-            )
-        )
+        sut = PredictionsApi(ReplicateConfig("tokenYUIOPJHIGUFYDRT", baseUrl = mockWebServer.url(path = "").toString()))
         id = "random-id"
         version = "2exbc4"
         input = mapOf("prompt" to "hd image of Einstein")
@@ -54,131 +49,135 @@ class PredictionsApiTest {
     }
 
     @Test
-    fun `test createPrediction _API returns success response`() = runTest {
-        val requestBody = buildRequestBody()
+    fun `test createPrediction _API returns success response`() =
+        runTest {
+            val requestBody = buildRequestBody()
 
-        val responseBody = PredictionDTO(
-            id = id,
-            model = "some-model",
-            version = version,
-            input = input,
-            output = listOf("outputUrl"),
-            status = "succeeded"
-        )
+            val responseBody =
+                PredictionDTO(
+                    id = id,
+                    model = "some-model",
+                    version = version,
+                    input = input,
+                    output = listOf("outputUrl"),
+                    status = "succeeded",
+                )
 
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setBody(gson.toJson(responseBody))
-        )
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(gson.toJson(responseBody)),
+            )
 
-        val response: Pair<Prediction<List<String>>?, Exception?> =
-            sut.createPrediction(requestBody, objectType)
-        val request = mockWebServer.takeRequest()
+            val response: Pair<Prediction<List<String>>?, Exception?> = sut.createPrediction(requestBody, objectType)
+            val request = mockWebServer.takeRequest()
 
-        assertEquals(responseBody.toPrediction(), response.first)
-        assertNull(response.second)
-        assertEquals("POST", request.method)
-        assertEquals("/predictions", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
-
-    @Test
-    fun `test createPrediction _API returns error response _exception is thrown`() = runTest {
-        val requestBody = buildRequestBody()
-
-        mockWebServer.enqueue(
-            MockResponse().setResponseCode(401)
-        )
-
-        val response: Pair<Prediction<List<String>>?, Exception?> =
-            sut.createPrediction(requestBody, objectType)
-        val request = mockWebServer.takeRequest()
-
-        assertNull(response.first)
-        assertTrue(response.second is HttpException)
-        assertEquals("POST", request.method)
-        assertEquals("/predictions", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
+            assertEquals(responseBody.toPrediction(), response.first)
+            assertNull(response.second)
+            assertEquals("POST", request.method)
+            assertEquals("/predictions", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
 
     @Test
-    fun `test getPrediction _API returns success response`() = runTest {
-        val responseBody = PredictionDTO(
-            id = id,
-            model = "some-model",
-            version = version,
-            input = input,
-            output = listOf("outputUrl"),
-            status = "succeeded"
-        )
+    fun `test createPrediction _API returns error response _exception is thrown`() =
+        runTest {
+            val requestBody = buildRequestBody()
 
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-                .setBody(gson.toJson(responseBody))
-        )
+            mockWebServer.enqueue(
+                MockResponse().setResponseCode(401),
+            )
 
-        val response: Pair<Prediction<List<String>>?, Exception?> =
-            sut.getPrediction(id, objectType)
-        val request = mockWebServer.takeRequest()
+            val response: Pair<Prediction<List<String>>?, Exception?> = sut.createPrediction(requestBody, objectType)
+            val request = mockWebServer.takeRequest()
 
-        assertEquals(responseBody.toPrediction(), response.first)
-        assertNull(response.second)
-        assertEquals("GET", request.method)
-        assertEquals("/predictions/$id", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
+            assertNull(response.first)
+            assertTrue(response.second is HttpException)
+            assertEquals("POST", request.method)
+            assertEquals("/predictions", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
 
     @Test
-    fun `test getPrediction _API returns error response _exception is thrown`() = runTest {
-        mockWebServer.enqueue(
-            MockResponse().setResponseCode(401)
-        )
+    fun `test getPrediction _API returns success response`() =
+        runTest {
+            val responseBody =
+                PredictionDTO(
+                    id = id,
+                    model = "some-model",
+                    version = version,
+                    input = input,
+                    output = listOf("outputUrl"),
+                    status = "succeeded",
+                )
 
-        val response: Pair<Prediction<List<String>>?, Exception?> =
-            sut.getPrediction(id, objectType)
-        val request = mockWebServer.takeRequest()
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(gson.toJson(responseBody)),
+            )
 
-        assertNull(response.first)
-        assertTrue(response.second is HttpException)
-        assertEquals("GET", request.method)
-        assertEquals("/predictions/$id", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
+            val response: Pair<Prediction<List<String>>?, Exception?> = sut.getPrediction(id, objectType)
+            val request = mockWebServer.takeRequest()
 
-    @Test
-    fun `test cancelPrediction _API returns success response`() = runTest {
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(200)
-        )
-
-        val response = sut.cancelPrediction(id)
-        val request = mockWebServer.takeRequest()
-
-        assertTrue(response.first)
-        assertNull(response.second)
-        assertEquals("POST", request.method)
-        assertEquals("/predictions/$id/cancel", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
+            assertEquals(responseBody.toPrediction(), response.first)
+            assertNull(response.second)
+            assertEquals("GET", request.method)
+            assertEquals("/predictions/$id", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
 
     @Test
-    fun `test cancelPrediction _API returns error response _exception is thrown`() = runTest {
-        mockWebServer.enqueue(
-            MockResponse().setResponseCode(500)
-        )
+    fun `test getPrediction _API returns error response _exception is thrown`() =
+        runTest {
+            mockWebServer.enqueue(
+                MockResponse().setResponseCode(401),
+            )
 
-        val response = sut.cancelPrediction(id)
-        val request = mockWebServer.takeRequest()
+            val response: Pair<Prediction<List<String>>?, Exception?> = sut.getPrediction(id, objectType)
+            val request = mockWebServer.takeRequest()
 
-        assertFalse(response.first)
-        assertTrue(response.second is IllegalStateException)
-        assertEquals("POST", request.method)
-        assertEquals("/predictions/$id/cancel", request.path)
-        assertTrue(request.headers["Authorization"] != null)
-    }
+            assertNull(response.first)
+            assertTrue(response.second is HttpException)
+            assertEquals("GET", request.method)
+            assertEquals("/predictions/$id", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
+
+    @Test
+    fun `test cancelPrediction _API returns success response`() =
+        runTest {
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200),
+            )
+
+            val response = sut.cancelPrediction(id)
+            val request = mockWebServer.takeRequest()
+
+            assertTrue(response.first)
+            assertNull(response.second)
+            assertEquals("POST", request.method)
+            assertEquals("/predictions/$id/cancel", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
+
+    @Test
+    fun `test cancelPrediction _API returns error response _exception is thrown`() =
+        runTest {
+            mockWebServer.enqueue(
+                MockResponse().setResponseCode(500),
+            )
+
+            val response = sut.cancelPrediction(id)
+            val request = mockWebServer.takeRequest()
+
+            assertFalse(response.first)
+            assertTrue(response.second is IllegalStateException)
+            assertEquals("POST", request.method)
+            assertEquals("/predictions/$id/cancel", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
 
     @Test
     fun `test listPredictions _API returns one-page success response`() = runTest {
@@ -284,7 +283,7 @@ class PredictionsApiTest {
         val predictable = TestPredictable(versionId = version, input = input)
         return mapOf(
             "version" to predictable.versionId,
-            "input" to predictable.input
+            "input" to predictable.input,
         )
     }
 }
