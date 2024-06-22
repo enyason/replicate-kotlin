@@ -1,5 +1,6 @@
 package io.github.enyason.predictions
 
+import io.github.enyason.predictions.models.PredictionDTO
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -34,4 +35,20 @@ interface PredictionsApiService {
     suspend fun cancelPrediction(
         @Path("predictionId") predictionId: String,
     ): Response<Unit>
+
+    @POST("models/{modelOwner}/{modelName}/predictions")
+    @JvmSuppressWildcards
+    suspend fun createPredictionWithModel(
+        @Path("modelOwner") modelOwner: String,
+        @Path("modelName") modelName: String,
+        @Body predictionRequest: Map<String, Any>,
+    ): Response<PredictionDTO<Any>>
+
+    @POST("deployments/{deploymentOwner}/{deploymentName}/predictions")
+    @JvmSuppressWildcards
+    suspend fun createPredictionWithDeployment(
+        @Path("deploymentOwner") deploymentOwner: String,
+        @Path("deploymentName") deploymentName: String,
+        @Body predictionRequest: Map<String, Any>,
+    ): Response<PredictionDTO<Any>>
 }

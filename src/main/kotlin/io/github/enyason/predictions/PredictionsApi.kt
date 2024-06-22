@@ -4,12 +4,21 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
+import io.github.enyason.base.StreamingEventSourceListener
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.toPrediction
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
+import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.ResponseBody
+import okhttp3.sse.EventSources
+import retrofit2.Response
 import java.lang.reflect.Type
+import java.util.concurrent.TimeUnit
 
 /**
  * This class receives and processes the responses gotten from [Replicate's](https://replicate.com) Predictions API
@@ -24,8 +33,6 @@ class PredictionsApi(config: ReplicateConfig) {
     private val retrofit by lazy { RetrofitFactory.buildRetrofit(config) }
 
     private val service: PredictionsApiService by lazy { retrofit.create(PredictionsApiService::class.java) }
-
-    private val gson: Gson by lazy { GsonBuilder().create() }
 
     val pollingDelayInMillis = config.pollingDelayInMillis
 
@@ -72,5 +79,72 @@ class PredictionsApi(config: ReplicateConfig) {
             val message = error?.detail ?: "Could not cancel prediction with ID: $predictionId"
             Pair(false, IllegalStateException(message))
         }
+    }
+
+    suspend fun streamWithModel(
+        modelOwner: String,
+        modelName: String,
+        requestBody: Map<String, Any>,
+    ) = callbackFlow {
+        val predictionResponse = service.createPredictionWithModel(modelOwner, modelName, requestBody)
+        this.produceResponse(predictionResponse, modelName)
+    }
+
+    suspend fun streamWithDeployment(
+        deploymentOwner: String,
+        deploymentName: String,
+        requestBody: Map<String, Any>,
+    ) = callbackFlow {
+        val predictionResponse =
+            service.createPredictionWithDeployment(deploymentOwner, deploymentName, requestBody)
+        this.produceResponse(predictionResponse, deploymentName)
+    }
+
+    private suspend fun ProducerScope<String>.produceResponse(
+        predictionResponse: Response<PredictionDTO<Any>>,
+        entityName: String,
+    ) {
+        if (!predictionResponse.isSuccessful) {
+            val errorMessage =
+                predictionResponse.errorBody()?.toModel()?.detail
+                    ?: "Could not create prediction with entity name: $entityName"
+            throw Exception(errorMessage)
+        }
+
+        predictionResponse.body()?.let { predictionDto ->
+            EventSources
+                .createFactory(sseClient())
+                .newEventSource(
+                    request = sseRequest(predictionDto.urls?.stream ?: throw Exception("Stream URL is null.")),
+                    listener =
+                        StreamingEventSourceListener(
+                            onEvent = { data -> this.trySend(data) },
+                            onError = { throw Exception(it) },
+                        ),
+                )
+        }
+
+        awaitClose()
+    }
+
+    companion object {
+        private const val SSE_CONNECT_TIMEOUT = 5L
+        private const val SSE_READ_TIMEOUT = 10L
+
+        val gson: Gson by lazy { GsonBuilder().create() }
+
+        fun sseRequest(url: String): Request {
+            return Request.Builder()
+                .url(url)
+                .addHeader("Accept", "text/event-stream")
+                .build()
+        }
+
+        fun sseClient() =
+            OkHttpClient.Builder()
+                .connectTimeout(SSE_CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
+                .writeTimeout(SSE_READ_TIMEOUT, TimeUnit.MINUTES)
+                .build()
     }
 }

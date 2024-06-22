@@ -11,20 +11,21 @@ import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.predictable.Predictable
 import io.github.enyason.predictions.predictable.validate
 import io.github.enyason.predictions.predictable.validateId
+import kotlinx.coroutines.flow.Flow
 
 /**
  * A client class to interact with the [Replicate](https://replicate.com) API.
  * This class provides methods for creating, retrieving, and canceling predictions.
  *
- *<p>Here is an example on how to get an intance of the class ,
- *<pre>
+ * Here is an example of how to get an instance of the class:
+ *```
  *
  * val client = Replicate.client("token")
  *
  * or
  *
  * val client = Replicate.client(ReplicateConfig("token"))
- *</pre>
+ *```
  *
  * @author Emmanuel Enya <a href="https://github.com/enyason">link</a>
  * @author Love Otudor <a href="https://github.com/Lamouresparus">link</a>
@@ -32,22 +33,29 @@ import io.github.enyason.predictions.predictable.validateId
  */
 class Replicate(val predictionAPI: PredictionsApi) {
     /**
-     * Creates a new prediction for a specific model version.
+     * Creates a new Prediction for a specific model version.
      * This method takes a [Predictable] object that encapsulates the inputs for the model.
      *
      * @param <OUTPUT> The generic type representing the data structure of the prediction output.
      * @param predictable the object holding the model version and input data for the prediction
+     * @param stream specify the stream option to request a URL to receive streaming output using server-sent events (SSE).
+     * If the requested model version supports streaming, then the returned prediction will have a stream entry in its
+     * urls property with a URL that you can use to stream the output using [io.github.enyason.client.stream]
      * @return a [Task] object representing the created prediction. You can call await on this object
      *         to wait for the prediction to complete and retrieve the results.
      * @see io.github.enyason.domain.models.Prediction.output
      */
-    suspend inline fun <reified OUTPUT> createPrediction(predictable: Predictable): Task<Prediction<OUTPUT>> {
+    suspend inline fun <reified OUTPUT> createPrediction(
+        predictable: Predictable,
+        stream: Boolean = false,
+    ): Task<Prediction<OUTPUT>> {
         return try {
             predictable.validate()
             val request =
                 mapOf(
                     "version" to predictable.versionId,
                     "input" to predictable.input,
+                    "stream" to stream,
                 )
 
             val predictionDtoObjectType = object : TypeToken<PredictionDTO<OUTPUT>>() {}.type
@@ -59,7 +67,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy<OUTPUT>(predictionAPI),
+                        PredictionPollingStrategy(predictionAPI),
                     )
                 }
 
@@ -73,7 +81,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
     }
 
     /**
-     * Retrieves the current status and results of a prediction identified by its ID.
+     * Retrieves the current status and results of a Prediction identified by its ID.
      *
      * @param <OUTPUT> The generic type representing the data structure of the prediction output.
      * @param predictionId the ID of the prediction to retrieve
@@ -92,7 +100,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
                         result = prediction,
                         isComplete = prediction.isCompleted(),
                         isCanceled = prediction.isCanceled(),
-                        PredictionPollingStrategy<OUTPUT>(predictionAPI),
+                        PredictionPollingStrategy(predictionAPI),
                     )
                 }
 
@@ -106,7 +114,7 @@ class Replicate(val predictionAPI: PredictionsApi) {
     }
 
     /**
-     * Cancels an ongoing prediction identified by its ID.
+     * Cancels an ongoing Prediction identified by its ID.
      *
      * @param predictionId the ID of the prediction to cancel
      * @return a [Result] object indicating success (true) or failure with an exception.
@@ -126,6 +134,40 @@ class Replicate(val predictionAPI: PredictionsApi) {
 
     fun getPredictions(): Result<List<Prediction<*>>> {
         TODO("Not yet implemented")
+    }
+
+    /**
+     * Create a Prediction using a specific model with an opportunity to stream the output.
+     *
+     * @param modelOwner the name of the model owner
+     * @param modelName the name of the model to be used
+     * @param input the input for the model
+     * @return a [Flow] of Strings representing the output produced as server-sent events (SSE).
+     */
+    suspend fun streamWithModel(
+        modelOwner: String,
+        modelName: String,
+        input: Map<String, Any>,
+    ): Flow<String> {
+        val requestBody = mapOf("input" to input, "stream" to true)
+        return predictionAPI.streamWithModel(modelOwner, modelName, requestBody)
+    }
+
+    /**
+     * Create a Prediction using a specific deployment with an opportunity to stream the output.
+     *
+     * @param deploymentOwner the name of the deployment owner
+     * @param deploymentName the name of the deployment to be used
+     * @param input the input for the deployment
+     * @return a [Flow] of Strings representing the output produced as server-sent events (SSE).
+     */
+    suspend fun streamWithDeployment(
+        deploymentOwner: String,
+        deploymentName: String,
+        input: Map<String, Any>,
+    ): Flow<String> {
+        val requestBody = mapOf("input" to input, "stream" to true)
+        return predictionAPI.streamWithDeployment(deploymentOwner, deploymentName, requestBody)
     }
 
     companion object {
