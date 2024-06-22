@@ -4,8 +4,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.client.TestPredictable
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.toPaginatedPredictions
 import io.github.enyason.domain.predictions.toPrediction
+import io.github.enyason.predictions.models.PaginatedPredictionsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
@@ -16,6 +19,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -171,6 +175,113 @@ class PredictionsApiTest {
             assertTrue(response.second is IllegalStateException)
             assertEquals("POST", request.method)
             assertEquals("/predictions/$id/cancel", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
+
+    @Test
+    fun `test listPredictions _API returns one-page success response`() =
+        runTest {
+            val responseBody =
+                PaginatedPredictionsDTO(
+                    next = null,
+                    previous = null,
+                    results =
+                        listOf(
+                            PredictionDTO(
+                                id = id,
+                                model = "some-model",
+                                version = version,
+                                input = input,
+                                output = listOf("outputUrl"),
+                                status = "succeeded",
+                            ),
+                        ),
+                )
+
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(gson.toJson(responseBody)),
+            )
+
+            val response: Pair<PaginatedPredictions?, Exception?> =
+                sut.listPredictions(null)
+            val request = mockWebServer.takeRequest()
+            val predictions = response.first
+
+            assertEquals(responseBody.toPaginatedPredictions(), predictions)
+            assertNotNull(predictions)
+            assertFalse(predictions.hasNext())
+            assertFalse(predictions.hasPrevious())
+            assertNull(response.second)
+            assertEquals("GET", request.method)
+            assertEquals("/predictions", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
+
+    @Test
+    fun `test listPredictions with cursor _API returns success with next and previous cursor response`() =
+        runTest {
+            val nextCursor = "https://api.replicate.com/v1/predictions?cursor=third_page"
+            val previousCursor = "https://api.replicate.com/v1/predictions?cursor=first_page"
+            val responseBody =
+                PaginatedPredictionsDTO(
+                    next = nextCursor,
+                    previous = previousCursor,
+                    results =
+                        listOf(
+                            PredictionDTO(
+                                id = id,
+                                model = "some-model",
+                                version = version,
+                                input = input,
+                                output = listOf("outputUrl"),
+                                status = "succeeded",
+                            ),
+                        ),
+                )
+
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(200)
+                    .setBody(gson.toJson(responseBody)),
+            )
+            val cursor = "second_page"
+
+            val response: Pair<PaginatedPredictions?, Exception?> =
+                sut.listPredictions(cursor)
+            val request = mockWebServer.takeRequest()
+            val paginatedPredictions = response.first
+
+            assertEquals(responseBody.toPaginatedPredictions(), paginatedPredictions)
+            assertNotNull(paginatedPredictions)
+            assertTrue(paginatedPredictions.hasNext())
+            assertTrue(paginatedPredictions.hasPrevious())
+            assertEquals(nextCursor, paginatedPredictions.next)
+            assertEquals(previousCursor, paginatedPredictions.previous)
+            assertNull(response.second)
+            assertEquals("GET", request.method)
+            assertEquals("/predictions?cursor=$cursor", request.path)
+            assertTrue(request.headers["Authorization"] != null)
+        }
+
+    @Test
+    fun `test listPredictions _API returns error response _exception is thrown`() =
+        runTest {
+            mockWebServer.enqueue(
+                MockResponse()
+                    .setResponseCode(500),
+            )
+
+            val response: Pair<PaginatedPredictions?, Exception?> =
+                sut.listPredictions(null)
+            val request = mockWebServer.takeRequest()
+            val paginatedPredictions = response.first
+
+            assertNull(paginatedPredictions)
+            assertNotNull(response.second)
+            assertEquals("GET", request.method)
+            assertEquals("/predictions", request.path)
             assertTrue(request.headers["Authorization"] != null)
         }
 

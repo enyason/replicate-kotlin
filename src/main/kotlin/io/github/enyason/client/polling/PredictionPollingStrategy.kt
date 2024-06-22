@@ -1,6 +1,6 @@
 package io.github.enyason.client.polling
 
-import io.github.enyason.client.Task
+import io.github.enyason.client.task.Task
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.PredictionStatus
 import io.github.enyason.domain.predictions.models.PredictionStatus.CANCELED

@@ -5,8 +5,11 @@ import com.google.gson.GsonBuilder
 import io.github.enyason.base.ReplicateConfig
 import io.github.enyason.base.RetrofitFactory
 import io.github.enyason.base.StreamingEventSourceListener
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
+import io.github.enyason.domain.predictions.toPaginatedPredictions
 import io.github.enyason.domain.predictions.toPrediction
+import io.github.enyason.predictions.models.PaginatedPredictionsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.toModel
 import kotlinx.coroutines.channels.ProducerScope
@@ -70,6 +73,14 @@ class PredictionsApi(config: ReplicateConfig) {
         Pair(prediction, null)
     }
 
+    private fun getPaginatedResponse(responseBody: ResponseBody) =
+        responseBody.use { body ->
+            val reader = body.charStream()
+            val paginatedPredictionsDto = gson.fromJson(reader, PaginatedPredictionsDTO::class.java)
+            val paginatedPredictions = paginatedPredictionsDto.toPaginatedPredictions()
+            Pair(paginatedPredictions, null)
+        }
+
     suspend fun cancelPrediction(predictionId: String): Pair<Boolean, Exception?> {
         val response = service.cancelPrediction(predictionId)
         return if (response.isSuccessful) {
@@ -125,6 +136,15 @@ class PredictionsApi(config: ReplicateConfig) {
         }
 
         awaitClose()
+    }
+
+    suspend fun listPredictions(cursor: String?): Pair<PaginatedPredictions?, Exception?> {
+        return try {
+            val responseBody = service.listPredictions(cursor)
+            getPaginatedResponse(responseBody)
+        } catch (exception: Exception) {
+            Pair(null, exception)
+        }
     }
 
     companion object {

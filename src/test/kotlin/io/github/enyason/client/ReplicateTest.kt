@@ -1,6 +1,7 @@
 package io.github.enyason.client
 
 import app.cash.turbine.test
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.predictions.PredictionsApi
 import io.github.enyason.predictions.predictable.Predictable
@@ -170,6 +171,54 @@ class ReplicateTest {
             assertNotNull(result.exceptionOrNull())
             assertEquals(errorMessage, result.exceptionOrNull()?.message)
             assertNull(result.getOrNull())
+        }
+
+    @Test
+    fun `When getting listPrediction fails, Then return an error result`() =
+        runTest {
+            val errorMessage = "Could not fetch prediction"
+
+            coEvery { predictionApi.listPredictions(null) } returns
+                Pair(
+                    null,
+                    IllegalStateException(errorMessage),
+                )
+            val result = sut.listPredictions()
+
+            assertTrue { result.isFailure }
+            assertNotNull(result.exceptionOrNull())
+            assertEquals(errorMessage, result.exceptionOrNull()?.message)
+            assertNull(result.getOrNull())
+        }
+
+    @Test
+    fun `When getting listPrediction succeeds, Then return a success result`() =
+        runTest {
+            val nextCursor = "third_page"
+            val previousCursor = "first_page"
+            val predictions =
+                PaginatedPredictions(
+                    next = nextCursor,
+                    previous = previousCursor,
+                    results =
+                        listOf(
+                            Prediction(
+                                id = "p_id",
+                                model = "some-model",
+                                output = listOf("outputUrl"),
+                            ),
+                        ),
+                )
+            coEvery { predictionApi.listPredictions(null) } returns Pair(predictions, null)
+
+            val result = sut.listPredictions()
+
+            assertTrue { result.isSuccess }
+            assertNotNull(result.getOrNull())
+            assertEquals(predictions, result.getOrNull())
+            assertEquals(nextCursor, result.getOrNull()?.next)
+            assertEquals(previousCursor, result.getOrNull()?.previous)
+            assertNull(result.exceptionOrNull())
         }
 
     @Test

@@ -1,10 +1,12 @@
 package io.github.enyason.domain.predictions
 
 import io.github.enyason.domain.predictions.models.Metrics
+import io.github.enyason.domain.predictions.models.PaginatedPredictions
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.PredictionStatus
 import io.github.enyason.domain.predictions.models.Urls
 import io.github.enyason.predictions.models.MetricsDTO
+import io.github.enyason.predictions.models.PaginatedPredictionsDTO
 import io.github.enyason.predictions.models.PredictionDTO
 import io.github.enyason.predictions.models.UrlsDTO
 
@@ -24,6 +26,14 @@ fun <OUTPUT> PredictionDTO<OUTPUT>.toPrediction(): Prediction<OUTPUT> {
         completedAt = this.completedAt,
         metrics = this.metrics.toMetrics(),
         urls = this.urls.toUrls(),
+    )
+}
+
+fun PaginatedPredictionsDTO.toPaginatedPredictions(): PaginatedPredictions {
+    return PaginatedPredictions(
+        next = this.next,
+        previous = this.previous,
+        results = this.results.map { it.toPrediction() },
     )
 }
 

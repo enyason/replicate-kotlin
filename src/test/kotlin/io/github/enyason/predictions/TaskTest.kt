@@ -1,8 +1,8 @@
 package io.github.enyason.predictions
 
-import io.github.enyason.client.Task
-import io.github.enyason.client.await
 import io.github.enyason.client.polling.PollingStrategy
+import io.github.enyason.client.task.Task
+import io.github.enyason.client.task.await
 import io.github.enyason.domain.predictions.models.Prediction
 import io.github.enyason.domain.predictions.models.PredictionStatus
 import io.github.enyason.domain.predictions.models.isCanceled

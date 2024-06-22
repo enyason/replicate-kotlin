@@ -1,4 +1,4 @@
-package io.github.enyason.client
+package io.github.enyason.client.task
 
 import io.github.enyason.client.polling.PollingStrategy
 import io.github.enyason.domain.predictions.models.Prediction
