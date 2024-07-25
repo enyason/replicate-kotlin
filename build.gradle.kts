@@ -13,23 +13,23 @@ repositories {
     mavenCentral()
 }
 
-//java {
-//    withJavadocJar()
-//    withSourcesJar()
-//}
-
 mavenPublishing {
     // Define coordinates for the published artifact
     coordinates(
         groupId = "io.github.enyason",
         artifactId = "replicate-kotlin",
-        version = version.toString()
+        version = version.toString(),
     )
 
     // Configure POM metadata for the published artifact
     pom {
         name.set("Replicate-Kotlin")
-        description.set("Replicate-Kotlin is a wrapper around Replicate’s API, enabling you to interact with cloud-based AI models using pure Kotlin code. This library is designed to easily integrate generative AI into Android and other kotlin supported environments.")
+        description.set(
+            "Replicate-Kotlin is a wrapper around Replicate’s API, enabling you to interact " +
+                    "with cloud-based AI models using pure Kotlin code. " +
+                    "This library is designed to easily integrate generative AI into " +
+                    "Android and other kotlin supported environments.",
+        )
         inceptionYear.set("2024")
         url.set("https://github.com/enyason/replicate-kotlin")
 
@@ -67,7 +67,6 @@ mavenPublishing {
             connection.set("scm:git:git://github.com/enyason/replicate-kotlin.git")
             developerConnection.set("scm:git:ssh://git@github.com/enyason/replicate-kotlin.git")
         }
-
     }
 
     // Configure publishing to Maven Central
@@ -76,8 +75,6 @@ mavenPublishing {
     // Enable GPG signing for all publications
     signAllPublications()
 }
-
-
 
 dependencies {
     // Retrofit and OkHttp3
