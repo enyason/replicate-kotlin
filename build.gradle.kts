@@ -26,9 +26,9 @@ mavenPublishing {
         name.set("Replicate-Kotlin")
         description.set(
             "Replicate-Kotlin is a wrapper around Replicate’s API, enabling you to interact " +
-                    "with cloud-based AI models using pure Kotlin code. " +
-                    "This library is designed to easily integrate generative AI into " +
-                    "Android and other kotlin supported environments.",
+                "with cloud-based AI models using pure Kotlin code. " +
+                "This library is designed to easily integrate generative AI into " +
+                "Android and other kotlin supported environments.",
         )
         inceptionYear.set("2024")
         url.set("https://github.com/enyason/replicate-kotlin")
